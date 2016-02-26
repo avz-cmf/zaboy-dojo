@@ -1,0 +1,55 @@
+{#
+ base form create
+#}
+{% extends '@layout/default.html.twig' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <div></div>
+{% endblock %}
+{% block javascript %}
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            // This code registers the correct location of the "demo"
+            // package so we can load Dojo from the CDN whilst still
+            // being able to load local modules
+            packages: []
+        };
+    </script>
+    <script src="/resource/js/dojo/dojo/dojo.js"></script>
+    <script>
+        require([
+            "dijit/Dialog",
+            "dijit/form/Form",
+            "dijit/form/TextBox",
+            "dijit/form/Button",
+            "dijit/form/DateText",
+            "dojo/domReady!"
+        ], function(Dialog, Form, TextBox, Button)
+        {
+            var form = new Form({
+                onSubmit: function(){
+                    alert(form.validate());
+
+                }
+            });
+            new TextBox({
+                placeHolder: "Login"
+            }).placeAt(form.containerNode);
+
+            new Button({
+                value: "OK",
+                type: 'submit'
+            }).placeAt(form.containerNode);
+
+            var dia = new Dialog({
+                content: form,
+                title: "Dialog with form",
+                style: "width: 300px; height: 300px;"
+            });
+            form.startup();
+            dia.show();
+        });
+    </script>
+{% endblock %}
