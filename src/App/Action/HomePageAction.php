@@ -25,7 +25,7 @@ class HomePageAction
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next = null)
     {
 
-        /*
+
         $data = [];
 
         if ($this->router instanceof Router\FastRouteRouter) {
@@ -46,11 +46,13 @@ class HomePageAction
         }
 
         return new HtmlResponse($this->template->render('app::home-page', $data));
-        */
+
+        /*
 
         $template = $request->getAttribute('example');
 
         $response->getBody()->write($this->template->render('example::' . $template));
         return $response->withHeader("Content-Type", 'text/html');
+        */
     }
 }

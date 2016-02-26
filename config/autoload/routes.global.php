@@ -8,14 +8,14 @@ return [
         ],
         'factories' => [
             App\Action\HomePageAction::class => App\Action\HomePageFactory::class,
-            Example\Action\ExamplePageAction::class => Example\Action\ExamplePageFactory::class
+            App\Action\ExamplePageAction::class => App\Action\ExamplePageFactory::class
         ],
     ],
 
     'routes' => [
         [
             'name' => 'home',
-            'path' => '/{example:[a-zA-Z]{1,40}}',
+            'path' => '/',
             'middleware' => App\Action\HomePageAction::class,
             'allowed_methods' => ['GET'],
         ],
@@ -27,8 +27,8 @@ return [
         ],
         [
             'name' => 'example',
-            'path' => '/example/',
-            'middleware' => Example\Action\ExamplePageAction::class,
+            'path' => '/{example:[a-zA-Z]{1,40}}',
+            'middleware' => App\Action\ExamplePageAction::class,
             'allowed_methods' => ['GET'],
         ]
     ],
