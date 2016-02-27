@@ -6,7 +6,6 @@
 		<meta name="viewport" content="width=570">
 		<style>
 			@import "./js/dojo/resources/dojo.css";
-			@import "./js/dgrid/css/dgrid.css";
 			@import "./js/dijit/themes/claro/claro.css";
  
 		</style>
@@ -25,32 +24,22 @@
                 "dojo/ready",
                 "dijit/ConfirmDialog",
                 "dijit/form/TextBox",
-                "dijit/form/Button",
                 "dojo/dom-construct",
                 "dojo/dom",
                 "dojo/on",
-                "dojo/parser",
                 "dojo/domReady!"
             ], function(
                 ready,
                 dialog,
                 textbox,
-                button,
                 domConstruct,
                 dom,
-                on,
-                parser 
+                on
             ) {
 
                 ready(function() {
-                    on.once(dom.byId("loadFormButton"), "click", theClick);
+                    on.once(dom.byId("loadFormButton"), "click", function(){dlg = theLoadForm(); dlg.show();} );
                 });
-                
-            var myDialog;
-            
-                function theClick () {
-                    return theLoadForm();
-                }
 
                 var theLoadForm = 
                 function () {
@@ -63,12 +52,14 @@
                             execute: function (){alert('submitted w/args:\n' + arguments[0].someName)}
                         });
                     }
-                    myDialog.show();
 
-            theButton =  new textbox({
-                    name: 'someName',
-                }).placeAt(domConstruct.create('div',{},myDialog.containerNode,'first'));     
-                
+                    theButton =  new textbox({
+                            name: 'someName',
+                        }
+                    ).placeAt(
+                        domConstruct.create('div',{},myDialog.containerNode,'first')
+                    );     
+
                     return myDialog;                    
                 };
                 
