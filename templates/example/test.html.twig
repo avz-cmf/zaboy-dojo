@@ -1,55 +1,226 @@
-{% extends '@layout/default.html.twig' %}
-{% block title %}Home{% endblock %}
-{% block content %}
-    <div></div>
-{% endblock %}
-{% block javascript %}
-    <script>
-        var dojoConfig = {
-            async: true,
-            isDebug: true,
-            // This code registers the correct location of the "demo"
-            // package so we can load Dojo from the CDN whilst still
-            // being able to load local modules
-            //packages: []
-        };
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Test Grid Store Observation</title>
+    <meta name="viewport" content="width=570">
+    <style>
+        @import "resource/js/dojo/dojo/resources/dojo.css";
+        @import "resource/js/dojo/dijit/themes/claro/claro.css";
+
+        div.main {
+            padding: 100px 100px 100px 350px;
+        }
+    </style>
+    <script src="resource/js/dojo/dojo/dojo.js"
+            data-dojo-config="async: true, parseOnLoad: true">
     </script>
-    <script src="/resource/js/dojo/dojo/dojo.js"></script>
-    <script>
-        require([
-            "dijit/Dialog",
-            "dijit/form/Form",
-            "dijit/form/TextBox",
-            "dijit/form/Button",
-            "dojo/domReady!"
-        ], function(Dialog, Form, TextBox, Button)
-        {
+</head>
+<body class="claro">
+<div class="main">
+    <div id="divform1">
+        <h2>form 1</h2>
+    </div>
+    <div id="divform2">
+        <h2>form 2</h2>
+
+    </div>
+    <div id="divform3">
+        <h2>form 3</h2>
+
+    </div>
+    <div id="result"></div>
+</div>
+<script>
+    require([
+        "dojo/dom",
+        "dijit/Dialog",
+        "dijit/form/Form",
+        "dijit/form/TextBox",
+        "dijit/form/Button",
+        "dojo/query",
+        "dojo/_base/array",
+        "dojo/_base/event",
+        "dojox/validate/web",
+        "dojox/validate/us",
+        "dojox/validate/check",
+        "dojo/domReady!"
+    ], function (dom, Dialog, Form, TextBox, Button, query, arrayUtil, baseEvent, validate) {
+
+        function form1() {
             var form = new Form({
-                onSubmit: function(){
-                    alert('submit');
-                }
+                onSubmit: function () {
+                    alert('alert');
+                },
+                doLayout: true
             });
-            new TextBox({
-                placeHolder: "Login"
-            }).placeAt(form.containerNode);
 
             new TextBox({
-                placeHolder: "Password",
-                type: 'password'
+                placeHolder: "Login",
             }).placeAt(form.containerNode);
 
             new Button({
-                value: "OK",
+                label: "Yes",
+                name: "no",
                 type: 'submit'
             }).placeAt(form.containerNode);
 
-            var dia = new Dialog({
-                content: form,
-                title: "Dialog with form",
-                style: "width: 300px; height: 300px;"
+            var divForm = dom.byId("divform1");
+
+            form.placeAt(divForm);
+        }
+
+        function form2() {
+            var form = new Form({
+                id: 'form2',
+                onSubmit: function (e) {
+                    var f = query("#form2")[0];
+                    alert('str: ' + f['login'].value)
+                },
+                doLayout: true
             });
-            form.startup();
-            dia.show();
-        });
-    </script>
-{% endblock %}
+
+            new TextBox({
+                name: 'login',
+                placeHolder: "Login",
+            }).placeAt(form.containerNode);
+
+            new Button({
+                label: "Login",
+                name: "Login",
+                type: 'submit'
+            }).placeAt(form.containerNode);
+
+            var divForm = dom.byId("divform2");
+
+            form.placeAt(divForm);
+        }
+
+        function form3() {
+            function doCheck(form) {
+                var results = validate.check(form, profile),
+                r = dom.byId("result");
+
+                if (results.isSuccessful()) {
+                    //	everything passed, log it to the result div
+                    r.innerHTML = "Everything passed validation!";
+                } else {
+                    var s = "";
+                    var missing = results.getMissing();
+                    if (missing.length) {
+                        s += '<h4>The following fields are missing:</h4>'
+                                + '<ol>';
+                        arrayUtil.forEach(missing, function (field) {
+                            s += '<li>' + field + '</li>';
+                        });
+                        s += '</ol>';
+                    }
+                    var invalid = results.getInvalid();
+                    if (invalid.length) {
+                        s += '<h4>The following fields are invalid:</h4>'
+                                + '<ol>';
+                        console.log(invalid);
+                        arrayUtil.forEach(invalid, function (obj) {
+                            s += '<li>' + obj.field + '</li>';
+                        });
+                        s += '</ol>';
+                    }
+                    r.innerHTML = s;
+                }
+            }
+
+            var form = new Form({
+                id: 'form3',
+                onSubmit: function (e) {
+                    var f = query("#form3")[0];
+                    baseEvent.stop(e);
+                    doCheck(f);
+                },
+                doLayout: true
+            });
+
+            new TextBox({
+                placeHolder: "first Name",
+                name: "firstName",
+            }).placeAt(form.containerNode);
+
+            /*
+            new TextBox({
+                placeHolder: "last Name",
+                name: "lastName",
+            }).placeAt(form.containerNode);
+
+
+            new TextBox({
+                placeHolder: "email",
+                name: "email",
+            }).placeAt(form.containerNode);
+
+            new TextBox({
+                placeHolder: "email Confirm",
+                name: "emailConfirm",
+            }).placeAt(form.containerNode);
+
+            new TextBox({
+                placeHolder: "password",
+                name: "password",
+                type: 'password'
+            }).placeAt(form.containerNode);
+
+            new TextBox({
+                placeHolder: "confrim password",
+                name: "password2",
+                type: 'password'
+            }).placeAt(form.containerNode);
+            */
+
+            new Button({
+                label: "Submit",
+                name: "submit",
+                type: 'submit'
+            }).placeAt(form.containerNode);
+
+            var divForm = dom.byId("divform3");
+
+            form.placeAt(divForm);
+
+            //	wait until after our requires are actually loaded.
+            /*
+            profile = {
+                trim: ["firstName", "lastName"],
+                required: ["firstName", "lastName", "email", "emailConfirm", "password", "password2"],
+                constraints: {
+                    firstName: validate.isText,
+                    lastName: validate.isText,
+                    password: validate.isText,
+                    password2: validate.isText,
+                    email: [validate.isEmailAddress, false, true],
+                    emailConfirm: [validate.isEmailAddress, false, true],
+                    phone: validate.us.isPhoneNumber
+                },
+                confirm: {
+                    "emailConfirm": "email",
+                    "password2": "password"
+                }
+            };
+            */
+            var profile = {
+                trim: ["firstName"],
+                required: ["firstName"],
+                constraints: {
+                    firstName: validate.isText
+                }
+
+            };
+
+        }
+
+        form1();
+        form2();
+        form3();
+    });
+
+</script>
+
+</body>
+</html>

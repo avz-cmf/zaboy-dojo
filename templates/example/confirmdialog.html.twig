@@ -1,72 +1,167 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Test Grid Store Observation</title>
-		<meta name="viewport" content="width=570">
-		<style>
-			@import "./js/dojo/resources/dojo.css";
-			@import "./js/dijit/themes/claro/claro.css";
- 
-		</style>
+<head>
+    <meta charset="utf-8">
+    <title>Test Grid Store Observation</title>
+    <meta name="viewport" content="width=570">
+    <style>
+        @import "resource/js/dojo/dojo/resources/dojo.css";
+        @import "resource/js/dojo/dijit/themes/claro/claro.css";
 
-		<script src="./js/dojo/dojo.js"
-                        data-dojo-config="async: true, parseOnLoad: true">
-                            
-                </script>
-                
-                
+    </style>
 
-	</head>
-	<body class="claro">
-        <script>
-            require([
-                "dojo/ready",
-                "dijit/ConfirmDialog",
-                "dijit/form/TextBox",
-                "dojo/dom-construct",
-                "dojo/dom",
-                "dojo/on",
-                "dojo/domReady!"
-            ], function(
-                ready,
-                dialog,
-                textbox,
-                domConstruct,
-                dom,
-                on
-            ) {
+    <script src="resource/js/dojo/dojo/dojo.js"
+            data-dojo-config="async: true, parseOnLoad: true">
 
-                ready(function() {
-                    on.once(dom.byId("loadFormButton"), "click", function(){dlg = theLoadForm(); dlg.show();} );
+    </script>
+
+
+</head>
+<body class="claro">
+<script>
+    require([
+        "dojo/ready",
+        "dijit/ConfirmDialog",
+        "dijit/form/TextBox",
+        "dojo/dom-construct",
+        "dojo/dom",
+        "dojo/on",
+        "dojo/query",
+        "dijit/form/Form",
+        "dojo/domReady!"
+    ], function (ready,
+                 dialog,
+                 textbox,
+                 domConstruct,
+                 dom,
+                 on, query, Form) {
+        function dialog1() {
+            ready(function () {
+                on.once(dom.byId("loadFormButton1"), "click", function () {
+                    dlg = theLoadForm();
+                    dlg.show();
                 });
-
-                var theLoadForm = 
-                function () {
-                    myDialog = dijit.byId('myDialog');
-                    if(!myDialog){
-                        myDialog = new dialog({
-                            id:'myDialog',
-                            title:'test dialog',
-                            style:'width:600px;',
-                            execute: function (){alert('submitted w/args:\n' + arguments[0].someName)}
-                        });
-                    }
-
-                    theButton =  new textbox({
-                            name: 'someName',
-                        }
-                    ).placeAt(
-                        domConstruct.create('div',{},myDialog.containerNode,'first')
-                    );     
-
-                    return myDialog;                    
-                };
-                
             });
-            
-        </script>
-        
-            <button id="loadFormButton">load form </button>
+
+            var theLoadForm =
+                    function () {
+                        var myDialog = dijit.byId('myDialog');
+                        if (!myDialog) {
+                            myDialog = new dialog({
+                                id: 'myDialog',
+                                title: 'test dialog',
+                                style: 'width:600px;',
+                                execute: function () {
+                                    alert('submitted w/args:\n' + arguments[0].someName)
+                                }
+                            });
+                        }
+
+                        var thetextbox = new textbox({
+                                    name: 'someName'
+                                }
+                        ).placeAt(myDialog.containerNode
+                                //domConstruct.create('div', {}, myDialog.containerNode, 'first')
+                        );
+
+                        return myDialog;
+                    };
+        }
+
+        function dialog2() {
+            ready(function () {
+                on.once(dom.byId("loadFormButton2"), "click", function () {
+                    dlg = theLoadForm();
+                    dlg.show();
+                });
+            });
+
+            var theLoadForm =
+                    function () {
+                        var form = new Form({
+                            onSubmit: function () {
+                                alert('alert');
+                            },
+                            doLayout: true
+                        });
+
+                        new textbox({
+                            placeHolder: "text 1",
+                        }).placeAt(form.containerNode);
+
+                        new textbox({
+                            placeHolder: "text 2",
+                        }).placeAt(form.containerNode);
+
+                        var myDialog = dijit.byId('myDialog');
+                        if (!myDialog) {
+                            myDialog = new dialog({
+                                id: 'myDialog',
+                                title: 'test dialog',
+                                content: form,
+                                style: 'width:600px;',
+                                execute: function () {
+                                    form.submit();
+                                }
+                            });
+                        }
+                        form.startup();
+                        return myDialog;
+                    };
+        }
+        function dialog3() {
+            ready(function () {
+                on.once(dom.byId("loadFormButton3"), "click", function () {
+                    dlg = theLoadForm();
+                    dlg.show();
+                });
+            });
+
+            var theLoadForm =
+                    function () {
+                        var form = new Form({
+                            id: 'form2',
+                            onSubmit: function (e) {
+                                var f = query("#form2")[0];
+                                alert('logint 1: ' + f['login1'].value)
+                            },
+                        });
+
+                        new textbox({
+                            name: 'login1',
+                            placeHolder: "text 1",
+                        }).placeAt(form.containerNode);
+
+                        new textbox({
+                            name: 'login2',
+                            placeHolder: "text 2",
+                        }).placeAt(form.containerNode);
+
+                        var myDialog = dijit.byId('myDialog');
+                        if (!myDialog) {
+                            myDialog = new dialog({
+                                id: 'myDialog',
+                                title: 'test dialog',
+                                content: form,
+                                style: 'width:600px;',
+                                execute: function () {
+                                    form.submit();
+                                }
+                            });
+                        }
+                        form.startup();
+                        return myDialog;
+                    };
+        }
+        dialog1();
+        dialog2();
+        dialog3();
+    });
+
+</script>
+
+<button id="loadFormButton1">load form 1</button>
+<button id="loadFormButton2">load form 2(with form)</button>
+<button id="loadFormButton3">load form 3(with form submit)</button>
 </body>
 </html>
