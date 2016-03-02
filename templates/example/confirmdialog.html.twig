@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Test Grid Store Observation</title>
+		<meta name="viewport" content="width=570">
+		<style>
+			@import "./js/dojo/resources/dojo.css";
+			@import "./js/dijit/themes/claro/claro.css";
+ 
+		</style>
+
+		<script src="./js/dojo/dojo.js"
+                        data-dojo-config="async: true, parseOnLoad: true">
+                            
+                </script>
+                
+                
+
+	</head>
+	<body class="claro">
+        <script>
+            require([
+                "dojo/ready",
+                "dijit/ConfirmDialog",
+                "dijit/form/TextBox",
+                "dojo/dom-construct",
+                "dojo/dom",
+                "dojo/on",
+                "dojo/domReady!"
+            ], function(
+                ready,
+                dialog,
+                textbox,
+                domConstruct,
+                dom,
+                on
+            ) {
+
+                ready(function() {
+                    on.once(dom.byId("loadFormButton"), "click", function(){dlg = theLoadForm(); dlg.show();} );
+                });
+
+                var theLoadForm = 
+                function () {
+                    myDialog = dijit.byId('myDialog');
+                    if(!myDialog){
+                        myDialog = new dialog({
+                            id:'myDialog',
+                            title:'test dialog',
+                            style:'width:600px;',
+                            execute: function (){alert('submitted w/args:\n' + arguments[0].someName)}
+                        });
+                    }
+
+                    theButton =  new textbox({
+                            name: 'someName',
+                        }
+                    ).placeAt(
+                        domConstruct.create('div',{},myDialog.containerNode,'first')
+                    );     
+
+                    return myDialog;                    
+                };
+                
+            });
+            
+        </script>
+        
+            <button id="loadFormButton">load form </button>
+</body>
+</html>
