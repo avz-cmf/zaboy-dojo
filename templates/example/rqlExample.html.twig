@@ -34,12 +34,30 @@
 
 <div id="grid"></div>
 <div id="control-box">
-    <div id="new element">
+    <div id="newElement">
         <button id="crateElement">Создать элемент</button>
         <button id="gen50Element">Сгенерировать 50 элементов</button>
-        <button id="deleteSelectElement">Удалить выбраный элемент</button>
-        <button id="setFilter">Удалить выбраный элемент</button>
+
     </div>
+    <div id="deleteElement">
+        <button id="deleteElement">Удалить выбраный элемент</button>
+        <button id="deleteGen50Element">Удалить все</button>
+    </div>
+    <div id="util">
+        <button id="setFilter">Созать фильтр</button>
+        <button id="refresh">Перезагрузить таблицу</button>
+    </div>
+</div>
+<div>
+    <h1>Таблица поддерживающая rql фильтрацию</h1>
+    <p>В данном примере у нас есть таблциа Users, которя хранит пользователей.
+        Мы можем добавить пользователя в ручную - для этого нужно нажать кнопку `Создать элемент`.
+        Так же можно сгенерировать 50 пользователей автоматически - нажать кнопку `Создать элемент`.
+        Мы так же можем удалить либо выбраного пользователя по id,
+        либо удалить сразу всех - нажать кнопки `Удалить выбраный элемент`, `Удалить все` соответсвенно.
+        Что бы задать фильтр мы дожны нажать одноименную кнопку `Созать фильтр`. далее в поле rql мы должны указать rql-фильтр.
+        <a href="">README</a> по использованию rql-фильтров.
+    </p>
 </div>
 
 <script>
@@ -211,7 +229,7 @@
                         alert("not set id");
                         return ;
                     }
-                    centralDataStore.delete(f['id'].value);
+                    centralDataStore.remove(f['id'].value);
                 }
             });
         }
@@ -231,7 +249,7 @@
             placeHolder: "and()&select()&limit()&sort()",
         }).placeAt(form3.containerNode);
 
-        var myDialog3 = dijit.byId('myDialog2');
+        var myDialog3 = dijit.byId('myDialog3');
         if (!myDialog3) {
             myDialog3 = new ConfirmDialog({
                 id: 'myDialog3',
@@ -250,17 +268,22 @@
         }
         form3.startup();
 
-
-        on.once(dom.byId("crateElement"), "click", function () {
+        on(dom.byId("crateElement"), "click", function () {
             myDialog.show();
         });
-        on.once(dom.byId("setFilter"), "click", function () {
-            myDialog3.show();
-        });
-        on.once(dom.byId("deleteElement"), "click", function () {
+
+        on(dom.byId("deleteElement"), "click", function () {
             myDialog2.show();
         });
-        on.once(dom.byId("gen50Element"), "click", function () {
+
+        on(dom.byId("setFilter"), "click", function () {
+            myDialog3.show();
+        });
+        on(dom.byId("refresh"), "click", function () {
+            filterGrid.clear();
+        });
+
+        on(dom.byId("gen50Element"), "click", function () {
             for (var i = 0; i< 50; ++i)
             {
                 centralDataStore.put({
@@ -269,8 +292,15 @@
                 });
             }
         });
-
-        composite.startup()
+        on(dom.byId("deleteGen50Element"), "click", function () {
+            for (var i = 0; i< 50; ++i)
+            {
+                centralDataStore.forEach(function (item) {
+                    centralDataStore.remove(item.id);
+                });
+            }
+        });
+        composite.startup();
     })
 </script>
 </body>
