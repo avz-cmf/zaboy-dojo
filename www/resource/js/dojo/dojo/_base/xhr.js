@@ -517,7 +517,8 @@ define([
 		_checkPubCount(dfd);
 	};
 
-	var _defaultContentType = "application/x-www-form-urlencoded";
+	//var _defaultContentType = "application/x-www-form-urlencoded";
+	var _defaultContentType = "text/x-www-form-urlencoded";
 
 	dojo._ioAddQueryToUrl = function(/*dojo.__IoCallbackArgs*/ioArgs){
 		// summary:

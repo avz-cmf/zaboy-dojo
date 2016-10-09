@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<link href="/resource/js/dojo/dojo/resources/dojo.css" rel="stylesheet">
+<link href="/resource/js/dojo/dijit/themes/claro/claro.css" rel="stylesheet">
+<link rel="stylesheet" href="/resource/js/dojo/dojox/highlight/resources/highlight.css"/>
+<link rel="stylesheet" href="/resource/js/dojo/dojox/highlight/resources/pygments/colorful.css"/>
+<link rel="stylesheet" href="/resource/js/dojo/dgrid/css/dgrid.css"/>
+<link rel="stylesheet" href="/resource/js/dojo/dgrid/css/skins/claro.css"/>
+<link rel="stylesheet" href="/resource/js/dojo/dgrid/css/skins/claro.css"/>
+<link rel="stylesheet" href="/resource/js/dojo/dojox/grid/enhanced/resources/claro/EnhancedGrid.css"/>
+<link rel="stylesheet" href="/resource/js/dojo/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css"/>
+<link rel="stylesheet" href="/resource/js/dojo-rql/lib/FilterEditor/resources/css/FilterEditor.css"/>
+<body class="claro">
+<script>
+    var dojoConfig = {
+        async: true,
+        isDebug: true,
+        // This code registers the correct location of the "demo"
+        // package so we can load Dojo from the CDN whilst still
+        // being able to load local modules
+        packages: [
+            {
+                name: "Rscript",
+                location: '/resource/js/dojo-rql/lib'
+            }
+        ]
+    };
+</script>
+<script src="resource/js/dojo/dojo/dojo.js"></script>
+
+<div id="grid"></div>
+<div id="control-box">
+    <div id="new element">
+        <button id="crateElement">Создать элемент</button>
+        <button id="gen50Element">Сгенерировать 50 элементов</button>
+        <button id="deleteSelectElement">Удалить выбраный элемент</button>
+        <button id="setFilter">Удалить выбраный элемент</button>
+    </div>
+</div>
+
+<script>
+    require([
+        "dojo/dom",
+        'dojo/_base/array',
+        "dojo/query",
+        'dojo/json',
+        "dijit",
+        /*"Rscript/TableControlPanel/TableControlPanelFactory",*/
+        "Rscript/Composite/widget/Composite",
+        'Rscript/FilteredGrid/widget/FilteredGrid',
+        'Rscript/FilterControlPanel/widget/FilterControlPanel',
+
+        'Rscript/extensions/Store/StoreRqlFilter',
+        'dstore/Store',
+        'dstore/Memory',
+        'dstore/Request',
+        'dstore/LocalDB',
+        'dstore/Cache',
+        'dstore/Tree',
+        "dojox/charting/plot2d/Columns",
+
+        "dijit/form/Button",
+
+
+        'dstore/RequestMemory',
+        "dstore/Rest",
+        'dstore/Trackable',
+
+        "dijit/ConfirmDialog",
+        "dijit/form/TextBox",
+        "dijit/form/Form",
+
+        "dojo/on",
+        "dojo/_base/window",
+        'dojo/_base/declare',
+        'dojo/request',
+        'dojo/_base/lang',
+        "dojo/dom-style",
+        "dojo/domReady!"
+    ], function (dom,
+                 array,
+                 query,
+                 json,
+                 dijit,
+                 /*TableControlPanelFactory,*/
+                 Composite,
+                 FilteredGrid,
+                 FilterControlPanel,
+                 StoreRqlFilter,
+                 Store,
+                 Memory,
+                 Request,
+                 LocalDB,
+                 Cache,
+                 Tree,
+                 Columns,
+                 Button,
+                 RequestMemory,
+                 Rest,
+                 Trackable,
+                 ConfirmDialog,
+                 TextBox,
+                 Form,
+                 on,
+                 window,
+                 declare,
+                 request,
+                 lang,
+                 domStyle) {
+        var centralDataStore = new (declare([StoreRqlFilter, Trackable]))({
+            'headers': {
+                'Accept': 'application/json',
+            },
+            'useRangeHeaders': true,
+            "target": "/rest/users"
+        });
+
+        var filteredGridOption = {
+            "title": "Таблциа пользователей",
+            "name": "plotPublishPrice",
+            "options": {
+                "columns": [
+                    {"label": "id", "field": "id"},
+                    {"label": "Имя", "field": "name"},
+                    {"label": "Фамилия", "field": "surname"},
+                ],
+                "collection": centralDataStore,
+                "selectionMode": "single",
+                "pagingLinks": false,
+                "pagingTextBox": true,
+                "firstLastArrows": true,
+                "rowsPerPage": 15,
+                "pageSizeOptions": [10, 15, 25]
+            },
+
+            "declare": [
+                "Grid",
+                "Keyboard",
+                "Selection",
+                "ColumnHider",
+                "ColumnResizer",
+                "GridRqlFilter"
+                //"_StoreMixin"
+            ]
+        };
+
+        var filterGrid = new FilteredGrid(filteredGridOption);
+
+        var composite = new Composite({
+            components: [filterGrid]
+        }).placeAt(dom.byId('grid'));
+
+
+        var form = new Form({
+            id: 'form1',
+        });
+
+        new TextBox({
+            name: 'name',
+            placeHolder: "name",
+        }).placeAt(form.containerNode);
+
+        new TextBox({
+            name: 'surname',
+            placeHolder: "surname",
+        }).placeAt(form.containerNode);
+
+        var myDialog = dijit.byId('myDialog');
+        if (!myDialog) {
+            myDialog = new ConfirmDialog({
+                id: 'myDialog1',
+                title: 'test dialog',
+                content: form,
+                style: 'width:600px;',
+                execute: function () {
+                    var f = query("#form1")[0];
+                    centralDataStore.put({
+                        "name": f['name'].value,
+                        "surname": f['surname'].value
+                    });
+                }
+            });
+        }
+        form.startup();
+
+
+        var form2 = new Form({
+            id: 'form2',
+        });
+
+        new TextBox({
+            name: 'id',
+            placeHolder: "id",
+        }).placeAt(form2.containerNode);
+
+        var myDialog2 = dijit.byId('myDialog2');
+        if (!myDialog2) {
+            myDialog2 = new ConfirmDialog({
+                id: 'myDialog2',
+                title: 'test dialog',
+                content: form2,
+                style: 'width:600px;',
+                execute: function () {
+                    var f = query("#form2")[0];
+                    if(!f['id'].value)
+                    {
+                        alert("not set id");
+                        return ;
+                    }
+                    centralDataStore.delete(f['id'].value);
+                }
+            });
+        }
+        form2.startup();
+
+
+        var form3 = new Form({
+            id: 'form3',
+        });
+
+        new TextBox({
+            name: 'name',
+            placeHolder: "name",
+        }).placeAt(form3.containerNode);
+        new TextBox({
+            name: 'filter',
+            placeHolder: "and()&select()&limit()&sort()",
+        }).placeAt(form3.containerNode);
+
+        var myDialog3 = dijit.byId('myDialog2');
+        if (!myDialog3) {
+            myDialog3 = new ConfirmDialog({
+                id: 'myDialog3',
+                title: 'test dialog',
+                content: form3,
+                style: 'width:600px;',
+                execute: function () {
+                    var f = query("#form3")[0];
+                    var filter = {
+                      "name": f['name'].value,
+                      "filter": f['filter'].value
+                    };
+                    filterGrid.setRqlFilter(filter);
+                }
+            });
+        }
+        form3.startup();
+
+
+        on.once(dom.byId("crateElement"), "click", function () {
+            myDialog.show();
+        });
+        on.once(dom.byId("setFilter"), "click", function () {
+            myDialog3.show();
+        });
+        on.once(dom.byId("deleteElement"), "click", function () {
+            myDialog2.show();
+        });
+        on.once(dom.byId("gen50Element"), "click", function () {
+            for (var i = 0; i< 50; ++i)
+            {
+                centralDataStore.put({
+                    "name": "testName" + i,
+                    "surname": "testSurname" + i
+                });
+            }
+        });
+
+        composite.startup()
+    })
+</script>
+</body>
+</html>

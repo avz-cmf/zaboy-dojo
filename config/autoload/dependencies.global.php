@@ -19,6 +19,13 @@ return [
         'factories' => [
             Application::class => ApplicationFactory::class,
             Helper\UrlHelper::class => Helper\UrlHelperFactory::class,
+
         ],
+        'abstract_factories' => [
+            zaboy\rest\Middleware\Factory\DataStoreAbstractFactory::class,
+            zaboy\rest\DataStore\Factory\CsvAbstractFactory::class,
+            Zend\Db\Adapter\AdapterAbstractServiceFactory::class,
+            zaboy\rest\DataStore\Factory\MemoryAbstractFactory::class
+        ]
     ],
 ];
