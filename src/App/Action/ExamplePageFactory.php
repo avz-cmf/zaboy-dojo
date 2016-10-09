@@ -6,7 +6,7 @@
  * Time: 16:59
  */
 
-namespace App\Action;
+namespace zaboy\App\Action;
 
 use Interop\Container\ContainerInterface;
 use Zend\Expressive\Template\TemplateRendererInterface;
