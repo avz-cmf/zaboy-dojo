@@ -10,7 +10,8 @@ return [
             zaboy\App\Action\HomePageAction::class => zaboy\App\Action\HomePageFactory::class,
             zaboy\App\Action\ExamplePageAction::class => zaboy\App\Action\ExamplePageFactory::class,
             zaboy\rest\Pipe\RestRql::class => zaboy\RqlExample\DataStore\Pipes\Factory\RestPipeFactory::class,
-            zaboy\Ebay\Trading\Action\GetItemTransactionsAction::class => zaboy\Ebay\Trading\Action\GetItemTransactionsFactory::class
+            zaboy\Ebay\Trading\Action\GetItemTransactionsAction::class => zaboy\Ebay\Trading\Action\GetItemTransactionsFactory::class,
+            zaboy\Ebay\Notification\Action\NotificationAction::class => \zaboy\Ebay\Notification\Action\NotificationFactory::class,
         ],
     ],
 
@@ -43,6 +44,12 @@ return [
             'name' => 'api.v1.ebay',
             'path' => '/api/v1/ebay/itemTransactions',
             'middleware' => zaboy\Ebay\Trading\Action\GetItemTransactionsAction::class,
+            'allowed_methods' => ['GET'],
+        ],
+        [
+            'name' => 'api.v1.ebay',
+            'path' => '/api/v1/ebay/notification',
+            'middleware' => zaboy\Ebay\Notification\Action\NotificationAction::class,
             'allowed_methods' => ['GET'],
         ],
 

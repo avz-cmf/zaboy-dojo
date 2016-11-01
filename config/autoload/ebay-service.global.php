@@ -47,4 +47,12 @@ return [
             'class' => zaboy\ebay\Notification\DataStore\NotificationCacheable::class
         ],
     ],
+    'factories' => [
+        'allNotification' => zaboy\ebay\Notification\DataStore\Factory\AllNotificationDataStoreFactory::class,
+        'notificationDataSource' => zaboy\ebay\Notification\DataSource\NotificationDataSourceFactory::class,
+        'typeNotificationDataSource' => zaboy\ebay\Notification\DataSource\TypeNotificationFactory::class,
+        ],
+    'abstract_factories' => [
+        zaboy\ebay\Notification\DataStore\Factory\NotificationCacheableStoreFactory::class,
+    ]
 ];
