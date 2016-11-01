@@ -10,6 +10,7 @@ return [
             zaboy\App\Action\HomePageAction::class => zaboy\App\Action\HomePageFactory::class,
             zaboy\App\Action\ExamplePageAction::class => zaboy\App\Action\ExamplePageFactory::class,
             zaboy\rest\Pipe\RestRql::class => zaboy\RqlExample\DataStore\Pipes\Factory\RestPipeFactory::class,
+            zaboy\Ebay\Trading\Action\GetItemTransactionsAction::class => zaboy\Ebay\Trading\Action\GetItemTransactionsFactory::class
         ],
     ],
 
@@ -21,20 +22,33 @@ return [
             'allowed_methods' => ['GET'],
         ],
         [
-            'name' => 'api.ping',
-            'path' => '/api/ping',
+            'name' => 'api.v1.ping',
+            'path' => '/api/v1/ping',
             'middleware' => zaboy\App\Action\PingAction::class,
             'allowed_methods' => ['GET'],
         ],
         [
-            'name' => 'rest.api',
-            'path' => '/rest[/{Resource-Name}[/{id}]]',
+            'name' => 'api.v1.rest',
+            'path' => '/api/v1/rest[/{Resource-Name}[/{id}]]',
             'middleware' =>  zaboy\rest\Pipe\RestRql::class,
             'allowed_method' => ['GET', 'POST', 'DELETE', 'PUSH'],
         ],
         [
+            'name' => 'api.v1.ebay.',
+            'path' => '/api/v1/ebay/findItem',
+            'middleware' => zaboy\Ebay\Finding\Action\FindItemsIneBayStoreAction::class,
+            'allowed_methods' => ['GET'],
+        ],
+        [
+            'name' => 'api.v1.ebay',
+            'path' => '/api/v1/ebay/itemTransactions',
+            'middleware' => zaboy\Ebay\Trading\Action\GetItemTransactionsAction::class,
+            'allowed_methods' => ['GET'],
+        ],
+
+        [
             'name' => 'example',
-            'path' => '/{example:[a-zA-Z]{1,40}}',
+            'path' => '/{example:[a-zA-Z]}',
             'middleware' => zaboy\App\Action\ExamplePageAction::class,
             'allowed_methods' => ['GET'],
         ]
