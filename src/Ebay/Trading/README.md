@@ -8,3 +8,36 @@
 `/api/v1/ebay/itemTransactions?itemId=`
 
 Где itemId - id товара сведения о транзакций которого мы хотим получить.
+
+Мы получим json вида
+
+```json
+    {
+      "items": [
+        {
+            "QuantityPurchased": "",
+            "TransactionPrice": "",
+            "PaidTime": "",
+            "TotalPrice": "",
+            "AmountPaid": "",
+            "ConvertedTransactionPrice": "",
+            "BuyerGuaranteePrice": "",
+            "CreatedDate": ""
+        }
+      ]
+    }
+```
+
+Или в случае ошибки
+
+```json
+    {
+      "errors": [
+        {
+            "ErrorCode": "",
+            "SeverityCode": "",
+            "LongMessage": ""
+        }
+      ]
+    }
+```

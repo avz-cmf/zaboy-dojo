@@ -10,7 +10,7 @@ namespace zaboy\ebay\Notification\DataStore\NotificationType;
 
 use zaboy\rest\DataStore\Memory;
 
-class TypeNotificationDataStore extends Memory
+class NotificationTypeDataStore extends Memory
 {
     protected static $tableConfig = [
         'id' => [

@@ -9,13 +9,15 @@
 namespace zaboy\ebay\Notification\DataSource;
 
 use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 
-class NotificationDataSourceFactory
+class NotificationDataSourceFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $container, $reqName, $requestedName)
+    public function __invoke(ContainerInterface $container, $requestedName, array $option = null)
     {
         $config = $container->get('config');
         $dataSourceConfig = $config['dataSource'][$requestedName];
+        $regParserData = $dataSourceConfig['regParserData'];
 
         if (!isset($dataSourceConfig['dataStore'])) {
             throw  new \Exception("dataStore not set");
@@ -23,6 +25,6 @@ class NotificationDataSourceFactory
 
         $allNotification = $container->get($dataSourceConfig['dataStore']);
 
-        return new NotificationDataSource($allNotification);
+        return new NotificationDataSource($allNotification, $regParserData);
     }
 }

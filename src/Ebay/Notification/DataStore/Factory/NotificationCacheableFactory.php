@@ -1,41 +1,61 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: root
- * Date: 25.07.16
- * Time: 17:08
+ * User: victorsecuring
+ * Date: 02.11.16
+ * Time: 1:58 PM
  */
 
 namespace zaboy\ebay\Notification\DataStore\Factory;
 
+
 use Interop\Container\ContainerInterface;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
 use Xiag\Rql\Parser\Query;
+use zaboy\ebay\Notification\DataSource\NotificationDataSource;
+use zaboy\ebay\Notification\DataStore\NotificationDbTable;
 use zaboy\rest\DataStore\DataStoreException;
 use zaboy\rest\DataStore\Factory\CacheableAbstractFactory;
 use zaboy\rest\DataStore\Interfaces\DataStoresInterface;
 
-class NotificationCacheableStoreFactory extends CacheableAbstractFactory
+class NotificationCacheableFactory extends CacheableAbstractFactory
 {
-    const KEY_ALL_NOTIFICATION = 'allNotification';
-    const KEY_CACHEABLE_NOTIFICATION = 'notificationCacheable';
-    const KEY_CACHEABLE_NOTIFICATION_TYPE = 'typeNotification';
 
-    static protected $flag = false;
+    protected static $KEY_IN_CANCREATE = 0;
+    protected static $KEY_IN_CREATE = 0;
+
+    const NOTIFICATION_CACHEABLE = 'notificationCacheable';
+
+    public function canCreate(ContainerInterface $container, $requestedName)
+    {
+        if ($this::$KEY_IN_CANCREATE){
+            return false;
+        }
+        $this::$KEY_IN_CANCREATE = 1;
+        /**@var DataStoresInterface $ebayAllNotification */
+        $ebayAllNotification = $container->get('ebayAllNotification');
+        $query = new Query();
+        $query->setQuery(new EqNode(NotificationDbTable::KEY_EBAY_NOTIFICATION_TYPE, $requestedName));
+        $result = $ebayAllNotification->query($query);
+
+        $this::$KEY_IN_CANCREATE = 0;
+        return count($result) > 0;
+    }
 
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        $config = $container->get('config');
-        if($this::$flag){
-            $serviceConfig = $config[self::KEY_DATASTORE][self::KEY_CACHEABLE_NOTIFICATION_TYPE];
-        }else{
-            $serviceConfig = $config[self::KEY_DATASTORE][self::KEY_CACHEABLE_NOTIFICATION];
+        if ($this::$KEY_IN_CREATE) {
+            throw new DataStoreException("Create will be called without pre call canCreate method");
         }
+        $this::$KEY_IN_CREATE = 1;
+        $serviceConfig = $container->get('config')[self::KEY_CLASS][self::NOTIFICATION_CACHEABLE];
+
         $requestedClassName = $serviceConfig[self::KEY_CLASS];
+
         if (isset($serviceConfig[self::KEY_DATASOURCE])) {
             if ($container->has($serviceConfig[self::KEY_DATASOURCE])) {
                 $getAll = $container->get($serviceConfig[self::KEY_DATASOURCE]);
-                if(method_exists($getAll, 'setNotificationType')){
+                if($getAll instanceof NotificationDataSource){
                     $getAll->setNotificationType($requestedName);
                 }
             } else {
@@ -48,7 +68,7 @@ class NotificationCacheableStoreFactory extends CacheableAbstractFactory
                 'There is DataSource for ' . $requestedName . 'in config \'dataStore\''
             );
         }
-        $serviceConfig[self::KEY_CACHEABLE] = 'Notification' . ucfirst($requestedName);
+        $serviceConfig[self::KEY_CACHEABLE] = ucfirst($requestedName);
 
         if ($container->has($serviceConfig[self::KEY_CACHEABLE])) {
             $cashStore = $container->get($serviceConfig[self::KEY_CACHEABLE]);
@@ -58,24 +78,9 @@ class NotificationCacheableStoreFactory extends CacheableAbstractFactory
             );
         }
 
-        //$cashStore = isset($serviceConfig['cashStore']) ?  new $serviceConfig['cashStore']() : null;
+        $this::$KEY_IN_CREATE = 0;
         return new $requestedClassName($getAll, $cashStore);
+
     }
-
-    public function canCreate(ContainerInterface $container, $requestedName)
-    {
-        if ($requestedName === self::KEY_CACHEABLE_NOTIFICATION_TYPE) {
-            $this::$flag = true;
-            return true;
-        } else {
-            /** @var DataStoresInterface $allNotification */
-            $allNotification = $container->get($this::KEY_ALL_NOTIFICATION);
-            $query = new Query();
-            $query->setQuery(new EqNode(AllNotificationDataStoreFactory::KEY_EBAY_NOTIFICATION_TYPE, $requestedName));
-            $result = $allNotification->query($query);
-        }
-        return count($result) > 0;
-    }
-
-
 }
+

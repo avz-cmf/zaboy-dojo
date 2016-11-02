@@ -15,7 +15,7 @@ class NotificationFactory
     public function __invoke(ContainerInterface $container, $requestedName)
     {
         $config = $container->get('config');
-        $store = $container->has('ebayNotification') ? $container->get('ebayNotification') : null;
+        $store = $container->has('ebayAllNotification') ? $container->get('ebayAllNotification') : null;
         return new NotificationAction($config['ebay'], $store);
     }
 }

@@ -74,7 +74,7 @@ class GetItemTransactionsAction
                 $item['ConvertedTransactionPrice'] = $transaction->ConvertedTransactionPrice->value;
                 $item['BuyerGuaranteePrice'] = $transaction->BuyerGuaranteePrice->value;
                 $item['CreatedDate'] = $transaction->CreatedDate;
-                $report[] = $item;
+                $report['items'][] = $item;
             }
             $status = 200;
         }

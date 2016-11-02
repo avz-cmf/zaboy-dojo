@@ -8,12 +8,13 @@
 
 namespace zaboy\ebay\Notification\DataSource;
 
-use victorynox\Notification\DataStore\Factory\AllNotificationDataStoreFactory;
 use Xiag\Rql\Parser\Query;
+use zaboy\ebay\Notification\DataStore\Factory\AllNotificationDataStoreFactory;
+use zaboy\ebay\Notification\DataStore\NotificationDbTable;
 use zaboy\rest\DataStore\Interfaces\DataSourceInterface;
 use zaboy\rest\DataStore\Interfaces\DataStoresInterface;
 
-class TypeNotificationDataSource implements DataSourceInterface
+class NotificationTypeDataSource implements DataSourceInterface
 {
     protected $dataStore;
 
@@ -32,10 +33,10 @@ class TypeNotificationDataSource implements DataSourceInterface
         $formatedData = [];
         $data = $this->dataStore->query(new Query());
         foreach ($data as $item){
-            if(isset($formatedData[$item[AllNotificationDataStoreFactory::KEY_EBAY_NOTIFICATION_TYPE]])){
-                $formatedData[$item[AllNotificationDataStoreFactory::KEY_EBAY_NOTIFICATION_TYPE]] += 1;
+            if(isset($formatedData[$item[NotificationDbTable::KEY_EBAY_NOTIFICATION_TYPE]])){
+                $formatedData[$item[NotificationDbTable::KEY_EBAY_NOTIFICATION_TYPE]] += 1;
             }else {
-                $formatedData[$item[AllNotificationDataStoreFactory::KEY_EBAY_NOTIFICATION_TYPE]] = 1;
+                $formatedData[$item[NotificationDbTable::KEY_EBAY_NOTIFICATION_TYPE]] = 1;
             }
         }
         $notificationType= [];
@@ -44,7 +45,7 @@ class TypeNotificationDataSource implements DataSourceInterface
         foreach ($formatedData as $key => $value){
             $notificationType[] = [
                 'id' => $i,
-                AllNotificationDataStoreFactory::KEY_EBAY_NOTIFICATION_TYPE => $key,
+                NotificationDbTable::KEY_EBAY_NOTIFICATION_TYPE => $key,
                 self::KEY_COUNT_NOTIFICATION_TYPE => $value,
             ];
             $i++;

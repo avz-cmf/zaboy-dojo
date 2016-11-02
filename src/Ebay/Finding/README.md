@@ -9,4 +9,21 @@
 
 Где storeName, keywords - имя магазина и перечень ключевых слов соответсвенно.
 
+Ответ прийдет в json формате, вида 
+```json
+    {
+      "time": {
+        "start": "",
+        "end": ""
+      },
+      "ack": "", 
+      "error": "",
+      "itemSearchURL": "", 
+      "searchResult": {
+        "count": "",
+        "items": []
+      }
+    }
+```
+
 

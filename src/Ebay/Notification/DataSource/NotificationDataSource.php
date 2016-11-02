@@ -11,6 +11,7 @@ namespace zaboy\ebay\Notification\DataSource;
 use Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode;
 use Xiag\Rql\Parser\Query;
 use zaboy\ebay\Notification\DataStore\Factory\AllNotificationDataStoreFactory;
+use zaboy\ebay\Notification\DataStore\NotificationDbTable;
 use zaboy\rest\DataStore\Interfaces\DataSourceInterface;
 use zaboy\rest\DataStore\Interfaces\DataStoresInterface;
 
@@ -21,19 +22,13 @@ class NotificationDataSource implements DataSourceInterface
 
     protected $notificationType;
 
-    protected $regParserData = [
-        'ItemListed' => [
-            'regExp' => '/\<ItemID\>([0-9]+)\<\/ItemID\>/',
-            'field' => [
-                'item_id'
-            ]
-        ]
-    ];
+    protected $regParserData;
 
-    public function __construct(DataStoresInterface $dataStore, $notificationType = null)
+    public function __construct(DataStoresInterface $dataStore, $notificationType = null, array $regParserData)
     {
         $this->dataStore = $dataStore;
         $this->notificationType = $notificationType;
+        $this->regParserData = $regParserData;
     }
 
     /**
@@ -50,20 +45,20 @@ class NotificationDataSource implements DataSourceInterface
             throw new \Exception("Not set notification Type");
         }
         $query = new Query();
-        $query->setQuery(new EqNode(AllNotificationDataStoreFactory::KEY_EBAY_NOTIFICATION_TYPE, $this->notificationType));
+        $query->setQuery(new EqNode(NotificationDbTable::KEY_EBAY_NOTIFICATION_TYPE, $this->notificationType));
 
         return $this->dataByType($this->dataStore->query($query));
     }
 
     protected function dataByType($data)
     {
-        $pattern = $this->regParserData[$this->notificationType]['regExp'];
-        $field = $this->regParserData[$this->notificationType]['field'];
         foreach ($data as &$item) {
             $result = [];
-            if (preg_match($pattern, $item['data'], $result)) {
-                for ($i = 1; $i < count($result); $i++) {
-                    $item[$field[$i-1]] = $result[$i];
+            foreach ($this->regParserData[$this->notificationType] as $filedName => $pattern){
+                if (preg_match($pattern, $item['data'], $result)) {
+                    if(isset($result[1])){
+                        $item[$filedName] = $result[1];
+                    }
                 }
             }
         }

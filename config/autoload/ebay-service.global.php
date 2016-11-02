@@ -8,12 +8,23 @@
 
 return [
     'dataSource' => [
-        'typeNotificationDataSource' => [
-            'dataStore' => 'allNotification'
+        #notification Configure
+        'notificationTypeDataSource' => [
+            'dataStore' => 'allEbayNotification'
         ],
         'notificationDataSource' => [
-            'dataStore' => 'allNotification'
-        ]
+            'dataStore' => 'allEbayNotification',
+            'regParserData' => [
+                'ItemListed' => [
+                    'item_id' => '/\<ItemID\>([0-9]+)\<\/ItemID\>/',
+                ]
+            ]
+        ],
+
+        #category configure
+        'ebayCategoryDataSource' => [
+            'class' => zaboy\Ebay\Category\DataSource\EbayCategoryDataSource::class
+        ],
     ],
     'tableGateway' => [
         'cds_table' => [
@@ -21,38 +32,45 @@ return [
         ]
     ],
     'dataStore' => [
-        'ebayNotification' => [
-                'class' => zaboy\rest\DataStore\DbTable::class,
-                'tableName' => 'ebay_notification'
-        ],
-        'allNotification' => [
-            'tableName' => 'ebay_notification'
+        #Notification configure
+        'allEbayNotification' => [
+            'class' => zaboy\ebay\Notification\DataStore\NotificationDbTable::class,
+            'tableName' => zaboy\ebay\Notification\DataStore\NotificationDbTable::EBAY_NOTIFICATION_TABLE_NAME
         ],
         'notificationCacheable' => [
             'dataSource' => 'notificationDataSource',
             'class' => zaboy\ebay\Notification\DataStore\NotificationCacheable::class
         ],
-        # Notification CacheableDS
-        'NotificationItemListed' => [
+
+        #Notification CacheableDS
+        'notificationItemListed' => [
             'class' => zaboy\ebay\Notification\DataStore\NotificationType\ItemListedDataStore::class
         ],
-        'NotificationAuctionCheckoutComplete' => [
+        'notificationAuctionCheckoutComplete' => [
             'class' => zaboy\ebay\Notification\DataStore\NotificationType\AuctionCheckoutCompleteDataStore::class
         ],
-        'NotificationTypeNotification' => [
-            'class' => zaboy\ebay\Notification\DataStore\NotificationType\TypeNotificationDataStore::class
+        'notificationTypes' => [
+            'class' => zaboy\ebay\Notification\DataStore\NotificationType\NotificationTypeDataStore::class
         ],
-        'typeNotification' => [
-            'dataSource' => 'typeNotificationDataSource',
-            'class' => zaboy\ebay\Notification\DataStore\NotificationCacheable::class
+
+
+        #category configure
+        'categoryMem' => [
+            'class' => zaboy\rest\DataStore\Memory::class
         ],
+        'ebayCategory' => [
+            'class' =>  zaboy\rest\DataStore\Cacheable::class,
+            'dataSource' => 'ebayCategoryDataSource',
+            'cacheable' => 'categoryMem'
+        ]
+
     ],
     'factories' => [
-        'allNotification' => zaboy\ebay\Notification\DataStore\Factory\AllNotificationDataStoreFactory::class,
         'notificationDataSource' => zaboy\ebay\Notification\DataSource\NotificationDataSourceFactory::class,
-        'typeNotificationDataSource' => zaboy\ebay\Notification\DataSource\TypeNotificationFactory::class,
-        ],
+        'notificationTypeDataSource' => zaboy\ebay\Notification\DataSource\NotificationTypeFactory::class,
+        'notificationTypeCacheable' => zaboy\ebay\Notification\DataStore\Factory\NotificationTypeCacheableFactory::class,
+    ],
     'abstract_factories' => [
-        zaboy\ebay\Notification\DataStore\Factory\NotificationCacheableStoreFactory::class,
+        zaboy\ebay\Notification\DataStore\Factory\NotificationCacheableFactory::class,
     ]
 ];
