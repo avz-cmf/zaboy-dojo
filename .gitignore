@@ -4,5 +4,11 @@ composer.lock
 phpunit.xml
 vendor/
 nbproject/
-phpunit.xml
 
+resource/js/dojo-rql/lib/FilteredGrid/widget/DefaultGrid.js
+resource/js/dojo/dgrid/.npmignore
+resource/js/dojo/dgrid/doc/components/extensions/SingleQuery.md
+resource/js/dojo/dgrid/doc/usage/npm.md
+resource/js/dojo/dgrid/extensions/SingleQuery.js
+resource/js/dojo/dgrid/test/extensions/SingleQuery.html
+resource/js/dojo/dgrid/test/intern/extensions/SingleQuery.js
