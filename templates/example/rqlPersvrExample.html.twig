@@ -59,8 +59,7 @@
         Так же можно сгенерировать 50 пользователей автоматически - нажать кнопку `Создать элемент`.
         Мы так же можем удалить либо выбраного пользователя по id,
         либо удалить сразу всех - нажать кнопки `Удалить выбраный элемент`, `Удалить все` соответсвенно.
-        Что бы задать фильтр мы дожны нажать одноименную кнопку `Созать фильтр`. далее в поле rql мы должны указать rql-фильтр.
-        <a href="https://github.com/avz-cmf/zaboy-dojo/blob/master/src/RqlExample/README.md">README</a> по использованию rql-фильтров.
+        Что бы задать фильтр мы дожны нажать одноименную кнопку `Созать фильтр`. далее в поле rql query
     </p>
 </div>
 
@@ -70,32 +69,23 @@
         'dojo/_base/array',
         "dojo/query",
         'dojo/json',
+        "rql/query",
         "dijit",
-        /*"Rscript/TableControlPanel/TableControlPanelFactory",*/
-        "Rscript/Composite/widget/Composite",
-        'Rscript/FilteredGrid/widget/FilteredGrid',
-        'Rscript/FilterControlPanel/widget/FilterControlPanel',
-
-        'Rscript/extensions/Store/StoreRqlFilter',
         'dstore/Store',
         'dstore/Memory',
         'dstore/Request',
         'dstore/LocalDB',
         'dstore/Cache',
         'dstore/Tree',
-        "dojox/charting/plot2d/Columns",
-
         "dijit/form/Button",
-
-
         'dstore/RequestMemory',
+        'dstore/extensions/RqlQuery',
         "dstore/Rest",
         'dstore/Trackable',
-
         "dijit/ConfirmDialog",
         "dijit/form/TextBox",
         "dijit/form/Form",
-
+        "dgrid/OnDemandGrid",
         "dojo/on",
         "dojo/_base/window",
         'dojo/_base/declare',
@@ -107,79 +97,56 @@
                  array,
                  query,
                  json,
+                 Query,
                  dijit,
-                 /*TableControlPanelFactory,*/
-                 Composite,
-                 FilteredGrid,
-                 FilterControlPanel,
-                 StoreRqlFilter,
                  Store,
                  Memory,
                  Request,
                  LocalDB,
                  Cache,
                  Tree,
-                 Columns,
                  Button,
                  RequestMemory,
+                 RqlQuery,
                  Rest,
                  Trackable,
                  ConfirmDialog,
                  TextBox,
                  Form,
+                 OnDemandGrid,
                  on,
                  window,
                  declare,
                  request,
                  lang,
                  domStyle) {
-        var centralDataStore = new (declare([StoreRqlFilter, Trackable]))({
-            'headers': {
-                'Accept': 'application/json',
-            },
-            'useRangeHeaders': true,
+
+        var Query = Query.Query;
+
+        var RestRqlStore = declare([Rest, Trackable, RqlQuery]);
+        //var RestRqlStore = declare([Rest, Trackable]);
+
+        var restRqlStore = new RestRqlStore({
             "target": "/api/v1/rest/users"
         });
-
-        var filteredGridOption = {
-            "title": "Таблциа пользователей",
-            "name": "plotPublishPrice",
-            "options": {
-                "columns": [
-                    {"label": "id", "field": "id"},
-                    {"label": "Имя", "field": "name"},
-                    {"label": "Фамилия", "field": "surname"},
-                ],
-                "collection": centralDataStore,
-                "selectionMode": "single",
-                "pagingLinks": false,
-                "pagingTextBox": true,
-                "firstLastArrows": true,
-                "rowsPerPage": 15,
-                "pageSizeOptions": [10, 15, 25]
-            },
-
-            "declare": [
-                "Grid",
-                "Keyboard",
-                "Selection",
-                "ColumnHider",
-                "ColumnResizer",
-                "GridRqlFilter"
-                //"_StoreMixin"
-            ]
-        };
-
-        var filterGrid = new FilteredGrid(filteredGridOption);
-
-        var composite = new Composite({
-            components: [filterGrid]
-        }).placeAt(dom.byId('grid'));
-
 
         var form = new Form({
             id: 'form1',
         });
+        var grid = new (declare([OnDemandGrid]))({
+            collection: restRqlStore,
+            columns: {
+                name: {
+                    label: 'First Name'
+                },
+                surname: {
+                    label: 'Last Name'
+                }
+            }
+        }, 'grid');
+
+        grid.startup();
+
 
         new TextBox({
             name: 'name',
@@ -200,7 +167,7 @@
                 style: 'width:600px;',
                 execute: function () {
                     var f = query("#form1")[0];
-                    centralDataStore.put({
+                    restRqlStore.put({
                         "name": f['name'].value,
                         "surname": f['surname'].value
                     });
@@ -233,7 +200,7 @@
                         alert("not set id");
                         return ;
                     }
-                    centralDataStore.remove(f['id'].value);
+                    restRqlStore.remove(f['id'].value);
                 }
             });
         }
@@ -245,12 +212,8 @@
         });
 
         new TextBox({
-            name: 'name',
-            placeHolder: "name",
-        }).placeAt(form3.containerNode);
-        new TextBox({
             name: 'filter',
-            placeHolder: "and()&select()&limit()&sort()",
+            placeHolder: "new Query().eq(\"name\",\"testName0\")",
         }).placeAt(form3.containerNode);
 
         var myDialog3 = dijit.byId('myDialog3');
@@ -262,11 +225,10 @@
                 style: 'width:600px;',
                 execute: function () {
                     var f = query("#form3")[0];
-                    var filter = {
-                      "name": f['name'].value,
-                      "filter": f['filter'].value
-                    };
-                    filterGrid.setRqlFilter(filter);
+                    var filter = eval(f['filter'].value);
+                    restRqlStore.filter(filter).forEach(function (product) {
+                        alert("name:" + product.name + " surname: " + product.surname);
+                    });
                 }
             });
         }
@@ -283,14 +245,15 @@
         on(dom.byId("setFilter"), "click", function () {
             myDialog3.show();
         });
+
         on(dom.byId("refresh"), "click", function () {
-            filterGrid.clear();
+
         });
 
         on(dom.byId("gen50Element"), "click", function () {
             for (var i = 0; i< 50; ++i)
             {
-                centralDataStore.put({
+                restRqlStore.put({
                     "name": "testName" + i,
                     "surname": "testSurname" + i
                 });
@@ -299,12 +262,13 @@
         on(dom.byId("deleteGen50Element"), "click", function () {
             for (var i = 0; i< 50; ++i)
             {
-                centralDataStore.forEach(function (item) {
-                    centralDataStore.remove(item.id);
+                restRqlStore.forEach(function (item) {
+                    restRqlStore.remove(item.id);
                 });
             }
         });
-        composite.startup();
+
+        grid.startup();
     })
 </script>
 </body>

@@ -8,8 +8,8 @@ return [
         ],
         'factories' => [
             zaboy\App\Action\HomePageAction::class => zaboy\App\Action\HomePageFactory::class,
-            zaboy\App\Action\ExamplePageAction::class => zaboy\App\Action\ExamplePageFactory::class,
-            zaboy\rest\Pipe\RestRql::class => zaboy\RqlExample\DataStore\Pipes\Factory\RestPipeFactory::class,
+            zaboy\RqlExample\Action\RqlExampleAction::class => zaboy\RqlExample\Action\RqlExampleFactory::class,
+            zaboy\rest\Pipe\RestRql::class => zaboy\rest\Pipe\Factory\RestRqlFactory::class,
             zaboy\Ebay\Trading\Action\GetItemTransactionsAction::class => zaboy\Ebay\Trading\Action\GetItemTransactionsFactory::class,
             zaboy\Ebay\Notification\Action\NotificationAction::class => \zaboy\Ebay\Notification\Action\NotificationFactory::class,
         ],
@@ -55,8 +55,8 @@ return [
 
         [
             'name' => 'example',
-            'path' => '/{example:[a-zA-Z]}',
-            'middleware' => zaboy\App\Action\ExamplePageAction::class,
+            'path' => '/{example:[a-zA-Z]{1,40}}',
+            'middleware' => zaboy\RqlExample\Action\RqlExampleAction::class,
             'allowed_methods' => ['GET'],
         ]
     ],

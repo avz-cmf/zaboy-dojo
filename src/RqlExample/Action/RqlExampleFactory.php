@@ -8,7 +8,6 @@
 
 namespace zaboy\RqlExample\Action;
 
-
 use Interop\Container\ContainerInterface;
 use Zend\Expressive\Template\TemplateRendererInterface;
 
@@ -16,6 +15,10 @@ class RqlExampleFactory
 {
     public function __invoke(ContainerInterface $container)
     {
-        return new RqlExampleAction($container->get(TemplateRendererInterface::class));
+        if(!$container->has(TemplateRendererInterface::class)){
+            throw new \Exception(TemplateRendererInterface::class . " not found in container");
+        }
+        $templater = $container->get(TemplateRendererInterface::class);
+        return new RqlExampleAction($templater);
     }
 }

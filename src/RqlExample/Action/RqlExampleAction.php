@@ -8,8 +8,6 @@
 
 namespace zaboy\RqlExample\Action;
 
-
-
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Zend\Expressive\Template\TemplateRendererInterface;
