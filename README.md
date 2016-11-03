@@ -45,7 +45,6 @@
 
 4) Следуйте инструкциям
 
-https://github.com/avz-cmf/zaboy-dojo/blob/master/doc/Ebay%20Category.md
 # Doc 
 
 Детальную документацию можно найти [тут](doc/)
