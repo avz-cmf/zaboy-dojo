@@ -30,8 +30,81 @@ Query объект синтаксически совместим с rql библ
 ```js
     var query = new Query().select("max(id)");
 ```
+Для использавния `rql` запросов в `dataStore`
+1) Подмешайте в требуемый dataStore расширение `RqlQuery`
+Пример:
+```js
+    var RqlDataStore = declare([Rest,RqlQuery]);
+```
+2) Создайте екземпляр данного класа 
+```js
+    var rqlDS = new RqlDataStore({
+        //params
+    });
+```
+
+3) Сконвертируйте query запрос в строку используя метод `toString()` созданого нами Query.
+```js
+   var queryRqlStr = queryRql.toString();
+```
+
+4) Передайте его в метод `filter()` DataStore.
+
+> Метод `filter()` вернет нам клонировынй DataStore с вшитым фильтром.
+    Если нам не нужно сохранять DS с фильтром, мы можем вызвать метод `forEach(callback)` 
+    передав в него колбек принимающий как параметр найденый объект.
+    
+```js
+    rqlDs.filter(queryRqlStr).forEach(function (item){
+        //Your code
+    });
+```
+
+Полный участок кода по работе с фильтром
+```js
+require([
+        "dojo/dom",       
+        "rql/query",
+        'dstore/Store',
+        "dstore/Rest",
+        'dstore/Trackable',
+        "dojo/on",
+        'dojo/_base/declare',   
+        "dojo/domReady!"
+    ], function (dom,
+                 Query,
+                 Store,
+                 Rest,
+                 Trackable,
+                 on,
+                 declare) {
+
+        var Query = Query.Query;
+
+        var RestRqlStore = declare([Rest, Trackable, RqlQuery]);
+        //var RestRqlStore = declare([Rest, Trackable]);
+
+        var restRqlStore = new RestRqlStore({
+            "target": "/api/v1/rest/users"
+        });
+        
+        var filter = new Query.select("max(id)").and(new Query().lt("id",10))
+        restRqlStore.filter(filter.toString()).forEach(function (product) {
+            element.innerHTML += "<li><ul>";
+            for (var field in product) {
+                if (product.hasOwnProperty(field)) {
+                    element.innerHTML += "<li>" + field + ": " + product[field] + "</li>";
+                }
+            }
+            element.innerHTML += "</ul></li>";
+        });
+        element.innerHTML += "</ul>";        
+    })
+```
 
 Все Rql запросы вы можете опробовать на тестовой странице.
 
-Для этого последуйте интрукции на странице [README](https://github.com/avz-cmf/zaboy-dojo/blob/master/README.md)
+Для этого:
+1) Следуйте интрукции на странице [README](https://github.com/avz-cmf/zaboy-dojo/blob/master/README.md)
+2) На домашней странице приложения выберете `Туториал по persvr/rql`.
 
