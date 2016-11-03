@@ -34,23 +34,23 @@ return [
     'dataStore' => [
         #Notification configure
         'allEbayNotification' => [
-            'class' => zaboy\ebay\Notification\DataStore\NotificationDbTable::class,
-            'tableName' => zaboy\ebay\Notification\DataStore\NotificationDbTable::EBAY_NOTIFICATION_TABLE_NAME
+            'class' => zaboy\Ebay\Notification\DataStore\NotificationDbTable::class,
+            'tableName' => zaboy\Ebay\Notification\DataStore\NotificationDbTable::EBAY_NOTIFICATION_TABLE_NAME
         ],
         'notificationCacheable' => [
             'dataSource' => 'notificationDataSource',
-            'class' => zaboy\ebay\Notification\DataStore\NotificationCacheable::class
+            'class' => zaboy\Ebay\Notification\DataStore\NotificationCacheable::class
         ],
 
         #Notification CacheableDS
         'notificationItemListed' => [
-            'class' => zaboy\ebay\Notification\DataStore\NotificationType\ItemListedDataStore::class
+            'class' => zaboy\Ebay\Notification\DataStore\NotificationType\ItemListedDataStore::class
         ],
         'notificationAuctionCheckoutComplete' => [
-            'class' => zaboy\ebay\Notification\DataStore\NotificationType\AuctionCheckoutCompleteDataStore::class
+            'class' => zaboy\Ebay\Notification\DataStore\NotificationType\AuctionCheckoutCompleteDataStore::class
         ],
         'notificationTypes' => [
-            'class' => zaboy\ebay\Notification\DataStore\NotificationType\NotificationTypeDataStore::class
+            'class' => zaboy\Ebay\Notification\DataStore\NotificationType\NotificationTypeDataStore::class
         ],
 
 
@@ -66,9 +66,9 @@ return [
 
     ],
     'factories' => [
-        'notificationDataSource' => zaboy\ebay\Notification\DataSource\NotificationDataSourceFactory::class,
-        'notificationTypeDataSource' => zaboy\ebay\Notification\DataSource\NotificationTypeFactory::class,
-        'notificationTypeCacheable' => zaboy\ebay\Notification\DataStore\Factory\NotificationTypeCacheableFactory::class,
+        'notificationDataSource' => zaboy\Ebay\Notification\DataSource\NotificationDataSourceFactory::class,
+        'notificationTypeDataSource' => zaboy\Ebay\Notification\DataSource\NotificationTypeFactory::class,
+        'notificationTypeCacheable' => zaboy\Ebay\Notification\DataStore\Factory\NotificationTypeCacheableFactory::class,
     ],
     'abstract_factories' => [
         zaboy\ebay\Notification\DataStore\Factory\NotificationCacheableFactory::class,

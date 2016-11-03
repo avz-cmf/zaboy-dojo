@@ -6,8 +6,7 @@
  * Time: 1:43 PM
  */
 
-namespace zaboy\ebay\Notification\DataStore;
-
+namespace zaboy\Ebay\Notification\DataStore;
 
 use zaboy\rest\DataStore\DbTable;
 
