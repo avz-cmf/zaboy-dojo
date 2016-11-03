@@ -98,6 +98,8 @@ require([
         
         //Отправляем запрос
         restRqlStore.filter(filter.toString()).forEach(function (product) {
+            
+            //Найденые елементы печатаем на екране
             element.innerHTML += "<li><ul>";
             for (var field in product) {
                 if (product.hasOwnProperty(field)) {
