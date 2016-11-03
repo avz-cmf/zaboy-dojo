@@ -17,7 +17,7 @@ Query объект синтаксически совместим с rql библ
     var query = new Query().eq("id",1);
 ```
 
-* Запрос вида and(lt(id,5),eq(name,testName0))
+* Запрос вида `and(lt(id,5),eq(name,testName0))`
 ```js
     var query = new Query().lt("id",1).eq(name,"testName0");
 ```
@@ -26,7 +26,7 @@ Query объект синтаксически совместим с rql библ
     var query = new Query().and(new Query().lt("id",1), new Query().eq(name,"testName0"));
 ```
 
-* Агрегатный запрос select(max(id))
+* Агрегатный запрос `select(max(id))`
 ```js
     var query = new Query().select("max(id)");
 ```
@@ -81,14 +81,22 @@ require([
 
         var Query = Query.Query;
 
+        //Подмешиваем миксин в DS
         var RestRqlStore = declare([Rest, Trackable, RqlQuery]);
-        //var RestRqlStore = declare([Rest, Trackable]);
 
+        //Создаем DS
         var restRqlStore = new RestRqlStore({
             "target": "/api/v1/rest/users"
         });
         
-        var filter = new Query.select("max(id)").and(new Query().lt("id",10))
+        //Создаем запрос вида select(max(id))&and(lt(id,25),gt(id,7))
+        var filter = new Query.select("max(id)").and(new Query().lt("id",25), new Query().gt("id",7))
+        
+        //Получаем элемент куда отрисуем найденые елементы.
+        var element = dom.byId("filterResult");
+        element.innerHTML = "<ul>";
+        
+        //Отправляем запрос
         restRqlStore.filter(filter.toString()).forEach(function (product) {
             element.innerHTML += "<li><ul>";
             for (var field in product) {

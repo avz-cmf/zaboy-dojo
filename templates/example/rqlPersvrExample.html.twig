@@ -137,16 +137,17 @@
 
         var Query = Query.Query;
 
+        //Create DS with mixin
         var RestRqlStore = declare([Rest, Trackable, RqlQuery]);
         //var RestRqlStore = declare([Rest, Trackable]);
 
+        //Create ds instance
         var restRqlStore = new RestRqlStore({
             "target": "/api/v1/rest/users"
         });
 
-        var form = new Form({
-            id: 'form1',
-        });
+
+        //create grid
         var grid = new (declare([OnDemandGrid]))({
             collection: restRqlStore,
             columns: {
@@ -161,6 +162,10 @@
 
         grid.startup();
 
+        //create form and dialog for control
+        var form = new Form({
+            id: 'form1',
+        });
 
         new TextBox({
             name: 'name',
@@ -242,7 +247,10 @@
                     var element = dom.byId("filterResult");
                     element.innerHTML = "<ul>";
 
+                    //set filtred Datastore to grid
                     grid.set("collection", restRqlStore.filter(filter.toString()));
+
+                    //get filtred item and print on display
                     restRqlStore.filter(filter.toString()).forEach(function (product) {
                         element.innerHTML += "<li><ul>";
                         for (var field in product) {
@@ -272,7 +280,12 @@
         });
 
         on(dom.byId("refresh"), "click", function () {
+
+
+            //clear grid store
             grid.set("collection", restRqlStore);
+            
+            //clear html element for resived item
             var element = dom.byId("filterResult");
             element.innerHTML = "";
         });
