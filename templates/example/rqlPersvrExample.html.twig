@@ -3,17 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="/resource/js/dojo/resources/dojo.css" rel="stylesheet">
+    <link href="/resource/js/dijit/themes/claro/claro.css" rel="stylesheet">
+    <link rel="stylesheet" href="/resource/js/dojox/highlight/resources/highlight.css"/>
+    <link rel="stylesheet" href="/resource/js/dojox/highlight/resources/pygments/colorful.css"/>
+    <link rel="stylesheet" href="/resource/js/dgrid/css/dgrid.css"/>
+    <link rel="stylesheet" href="/resource/js/dgrid/css/skins/claro.css"/>
+    <link rel="stylesheet" href="/resource/js/dgrid/css/skins/claro.css"/>
+    <link rel="stylesheet" href="/resource/js/dojox/grid/enhanced/resources/claro/EnhancedGrid.css"/>
+    <link rel="stylesheet" href="/resource/js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css"/>
+    <link rel="stylesheet" href="/resource/js/dojo-rql/lib/FilterEditor/resources/css/FilterEditor.css"/>
+    <style>
+        #control-box {
+            margin: 10px;
+        }
+        #filterResult {
+            margin: 50px;
+        }
+    </style>
 </head>
-<link href="/resource/js/dojo/resources/dojo.css" rel="stylesheet">
-<link href="/resource/js/dijit/themes/claro/claro.css" rel="stylesheet">
-<link rel="stylesheet" href="/resource/js/dojox/highlight/resources/highlight.css"/>
-<link rel="stylesheet" href="/resource/js/dojox/highlight/resources/pygments/colorful.css"/>
-<link rel="stylesheet" href="/resource/js/dgrid/css/dgrid.css"/>
-<link rel="stylesheet" href="/resource/js/dgrid/css/skins/claro.css"/>
-<link rel="stylesheet" href="/resource/js/dgrid/css/skins/claro.css"/>
-<link rel="stylesheet" href="/resource/js/dojox/grid/enhanced/resources/claro/EnhancedGrid.css"/>
-<link rel="stylesheet" href="/resource/js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css"/>
-<link rel="stylesheet" href="/resource/js/dojo-rql/lib/FilterEditor/resources/css/FilterEditor.css"/>
 <body class="claro">
 <script>
     var dojoConfig = {
@@ -35,7 +43,19 @@
     };
 </script>
 <script src="resource/js/dojo/dojo.js"></script>
-
+<div>
+    <h1>Таблица поддерживающая rql фильтрацию</h1>
+    <p>В данном примере у нас есть таблциа Users, которя хранит пользователей.
+        Мы можем добавить пользователя в ручную - для этого нужно нажать кнопку `Создать элемент`.
+        Так же можно сгенерировать 50 пользователей автоматически - нажать кнопку `Создать элемент`.
+        Мы так же можем удалить либо выбраного пользователя по id,
+        либо удалить сразу всех - нажать кнопки `Удалить выбраный элемент`, `Удалить все` соответсвенно.
+        Что бы задать фильтр мы дожны нажать одноименную кнопку `Созать фильтр`.
+        В поле rql query мы должны ввести либо rql Query object. (Более детально о Query object <a
+                href="https://github.com/persvr/rql">тут - persvr/rql</a>).
+        Так же вы можете ввести туда rqlString.
+    </p>
+</div>
 <div id="grid"></div>
 <div id="control-box">
     <div id="newElement">
@@ -49,19 +69,10 @@
     </div>
     <div id="util">
         <button id="setFilter">Созать фильтр</button>
-        <button id="refresh">Перезагрузить таблицу</button>
+        <button id="refresh">Перезагрузить таблицу(Очистить фильтры)</button>
     </div>
 </div>
-<div>
-    <h1>Таблица поддерживающая rql фильтрацию</h1>
-    <p>В данном примере у нас есть таблциа Users, которя хранит пользователей.
-        Мы можем добавить пользователя в ручную - для этого нужно нажать кнопку `Создать элемент`.
-        Так же можно сгенерировать 50 пользователей автоматически - нажать кнопку `Создать элемент`.
-        Мы так же можем удалить либо выбраного пользователя по id,
-        либо удалить сразу всех - нажать кнопки `Удалить выбраный элемент`, `Удалить все` соответсвенно.
-        Что бы задать фильтр мы дожны нажать одноименную кнопку `Созать фильтр`. далее в поле rql query
-    </p>
-</div>
+<div id="filterResult"></div>
 
 <script>
     require([
@@ -70,6 +81,7 @@
         "dojo/query",
         'dojo/json',
         "rql/query",
+        "rql/parser",
         "dijit",
         'dstore/Store',
         'dstore/Memory',
@@ -98,6 +110,7 @@
                  query,
                  json,
                  Query,
+                 parseQuery,
                  dijit,
                  Store,
                  Memory,
@@ -195,10 +208,9 @@
                 style: 'width:600px;',
                 execute: function () {
                     var f = query("#form2")[0];
-                    if(!f['id'].value)
-                    {
+                    if (!f['id'].value) {
                         alert("not set id");
-                        return ;
+                        return;
                     }
                     restRqlStore.remove(f['id'].value);
                 }
@@ -226,9 +238,20 @@
                 execute: function () {
                     var f = query("#form3")[0];
                     var filter = eval(f['filter'].value);
-                    restRqlStore.filter(filter).forEach(function (product) {
-                        alert("name:" + product.name + " surname: " + product.surname);
+                    var element = dom.byId("filterResult");
+                    element.innerHTML = "<ul>";
+
+                    grid.set("collection", restRqlStore.filter(filter.toString()));
+                    restRqlStore.filter(filter.toString()).forEach(function (product) {
+                        element.innerHTML += "<li><ul>";
+                        for (var field in product) {
+                            if (product.hasOwnProperty(field)) {
+                                element.innerHTML += "<li>" + field + ": " + product[field] + "</li>";
+                            }
+                        }
+                        element.innerHTML += "</ul></li>";
                     });
+                    element.innerHTML += "</ul>";
                 }
             });
         }
@@ -247,12 +270,13 @@
         });
 
         on(dom.byId("refresh"), "click", function () {
-
+            grid.set("collection", restRqlStore);
+            var element = dom.byId("filterResult");
+            element.innerHTML = "";
         });
 
         on(dom.byId("gen50Element"), "click", function () {
-            for (var i = 0; i< 50; ++i)
-            {
+            for (var i = 0; i < 50; ++i) {
                 restRqlStore.put({
                     "name": "testName" + i,
                     "surname": "testSurname" + i
@@ -260,8 +284,7 @@
             }
         });
         on(dom.byId("deleteGen50Element"), "click", function () {
-            for (var i = 0; i< 50; ++i)
-            {
+            for (var i = 0; i < 50; ++i) {
                 restRqlStore.forEach(function (item) {
                     restRqlStore.remove(item.id);
                 });
