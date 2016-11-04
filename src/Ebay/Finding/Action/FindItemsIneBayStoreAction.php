@@ -25,24 +25,31 @@ class FindItemsIneBayStoreAction
     public function __construct(array $credentials)
     {
         $this->service = new FindingService($credentials
-            /*[
-            'credentials' => [
-                'appId' => '',
-                'certId' => '',
-                'devId' => '',
-            ]
-        ]*/);
+        /*[
+        'credentials' => [
+            'appId' => '',
+            'certId' => '',
+            'devId' => '',
+        ]
+    ]*/);
     }
+
     public function __invoke(Request $request, Response $response, callable $next)
     {
         $query = $request->getQueryParams();
         $storeName = $query['storeName'];
         $keywords = $query['keywords'];
+        $query = [];
+        if ($storeName) {
+            $query['storeName'] = $storeName;
+        }
+        if ($keywords) {
+            $query['keywords'] = $keywords;
+        }else if (!$storeName){
+            throw new \Exception("Is Store Name not set, keywords is require!");
+        }
 
-        $findingRequest = new FindItemsIneBayStoresRequest([
-            'storeName' => $storeName,
-            'keywords' => $keywords
-        ]);
+        $findingRequest = new FindItemsIneBayStoresRequest($query);
         $report = [];
         $report['time']['start'] = new \DateTime();
         $findingResponse = $this->service->findItemsIneBayStores($findingRequest);

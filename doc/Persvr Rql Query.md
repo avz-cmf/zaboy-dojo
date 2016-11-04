@@ -9,7 +9,7 @@ DStore будет нашм связующим компонентов общен�
 используя Query объект.
 
 Query объект синтаксически совместим с rql библиотекой серверной стороны [xiag/rql-parser](https://github.com/xiag-ag/rql-parser )
-Используя даный метод мы можем отправлять rql запросы вплоть до агригатных функций.
+Используя даный метод мы можем отправлять rql запросы вплоть до агрегатный функций.
 
 * Допустим мы хотим отправить запрос вида `eq(id,1)`
 Используя данный оъект - 
@@ -17,7 +17,43 @@ Query объект синтаксически совместим с rql библ
     var query = new Query().eq("id",1);
 ```
 
-* Запрос вида `and(lt(id,5),eq(name,testName0))`
+* `lt(id, 10)`
+```js
+    var query = new Query().lt("id", 10);
+```
+
+* `le(id, 10)`
+```js
+    var query = new Query().le("id", 10);
+```
+
+* `gt(id, 10)`
+```js
+    var query = new Query().gt("id", 10);
+```
+
+* `ge(id, 10)`
+```js
+    var query = new Query().ge("id", 10);
+```
+
+* `ne(id, 10)`
+```js
+    var query = new Query().ne("id", 10);
+```
+
+* `in(id, name)`
+```js
+    var query = new Query().in("id", "name");
+```
+
+* `out(id, surname)`
+```js
+    var query = new Query().out("id", "surname");
+```
+
+
+* `and(lt(id,5),eq(name,testName0))`
 ```js
     var query = new Query().lt("id",1).eq(name,"testName0");
 ```
@@ -26,16 +62,53 @@ Query объект синтаксически совместим с rql библ
     var query = new Query().and(new Query().lt("id",1), new Query().eq(name,"testName0"));
 ```
 
+* `or(gt(id,10),eq(name,testName2))`
+```js
+    var query = new Query().or(new Query().gt("id",10), new Query().eq(name,"testName2"));
+```
+
+
+* `limit(100)`
+```js
+    var query = new Query().limit(100);
+```
+
+* `limit(100, 10)`
+```js
+    var query = new Query().limit(100, 10);
+```
+
+* `sort(-id)`
+```js
+    var query = new Query().sort("-id");
+```
+
+* `select(id,name)`
+```js
+    var query = new Query().select("id", "name");
+```
+
 * Агрегатный запрос `select(max(id))`
 ```js
     var query = new Query().select("max(id)");
 ```
+
+
+
+## Использавния `rql` запросов в `dataStore`
+
 Для использавния `rql` запросов в `dataStore`
-1) Подмешайте в требуемый dataStore расширение `RqlQuery`
+
+1) Подмешайте в требуемый (*)DStore расширение `RqlQuery`
+
 Пример:
 ```js
     var RqlDataStore = declare([Rest,RqlQuery]);
 ```
+
+> (*) DStore включает в себя несколько реализаций. Мы будет мисользовать - Rest, так как он дает возможность брать даные  
+ из удаленного ресурса. Подробнее о видах DStore можно прочесть [тут](https://github.com/SitePen/dstore#included-stores).   
+
 2) Создайте екземпляр данного класа 
 ```js
     var rqlDS = new RqlDataStore({
@@ -60,29 +133,23 @@ Query объект синтаксически совместим с rql библ
     });
 ```
 
-Полный участок кода по работе с фильтром
+### Полный участок кода по работе с фильтром
 ```js
 require([
         "dojo/dom",       
         "rql/query",
-        'dstore/Store',
         "dstore/Rest",
-        'dstore/Trackable',
-        "dojo/on",
         'dojo/_base/declare',   
         "dojo/domReady!"
     ], function (dom,
                  Query,
-                 Store,
                  Rest,
-                 Trackable,
-                 on,
                  declare) {
 
         var Query = Query.Query;
 
         //Подмешиваем миксин в DS
-        var RestRqlStore = declare([Rest, Trackable, RqlQuery]);
+        var RestRqlStore = declare([Rest , RqlQuery]);
 
         //Создаем DS
         var restRqlStore = new RestRqlStore({
@@ -112,9 +179,12 @@ require([
     })
 ```
 
-Все Rql запросы вы можете опробовать на тестовой странице.
+##Тестовая страница
 
+Все Rql запросы вы можете опробовать на тестовой странице.
 Для этого:
+
 1) Следуйте интрукции на странице [README](https://github.com/avz-cmf/zaboy-dojo/blob/master/README.md)
+
 2) На домашней странице приложения выберете `Туториал по persvr/rql`.
 
