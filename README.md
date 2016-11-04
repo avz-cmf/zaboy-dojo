@@ -31,9 +31,9 @@
 `composer install`
 
 Дальше можно поднять PHP Built-in web server командкой
-`php -S localhost:9090 -t www/` 
+`php -S localhost:8080 -t www/` 
 
-Сервер поднялся на порту 9090.
+Сервер поднялся на порту 8080.
 Теперь перейдите по ссылке [localhost](http://localhost:9090/ "Localhost") и можете приступать к изучению rql.
 
 

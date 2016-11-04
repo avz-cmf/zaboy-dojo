@@ -20,6 +20,9 @@
         #filterResult {
             margin: 50px;
         }
+        ul {
+            margin: 5px;
+        }
     </style>
 </head>
 <body class="claro">
@@ -104,6 +107,7 @@
         'dojo/_base/declare',
         'dojo/request',
         'dojo/_base/lang',
+        "dojo/Deferred",
         "dojo/dom-style",
         "dojo/domReady!"
     ], function (dom,
@@ -156,6 +160,9 @@
                 },
                 surname: {
                     label: 'Last Name'
+                },
+                age: {
+                    label: 'Age'
                 }
             }
         }, 'grid');
@@ -177,6 +184,11 @@
             placeHolder: "surname",
         }).placeAt(form.containerNode);
 
+        new TextBox({
+            name: 'age',
+            placeHolder: "10",
+        }).placeAt(form.containerNode);
+
         var myDialog = dijit.byId('myDialog');
         if (!myDialog) {
             myDialog = new ConfirmDialog({
@@ -188,7 +200,8 @@
                     var f = query("#form1")[0];
                     restRqlStore.put({
                         "name": f['name'].value,
-                        "surname": f['surname'].value
+                        "surname": f['surname'].value,
+                        "age": f['age'].value
                     });
                 }
             });
@@ -245,22 +258,25 @@
                     var f = query("#form3")[0];
                     var filter = eval(f['filter'].value);
                     var element = dom.byId("filterResult");
-                    element.innerHTML = "<ul>";
+                    element.innerHTML = "";
+                    var html = "<ul>";
 
                     //set filtred Datastore to grid
                     grid.set("collection", restRqlStore.filter(filter.toString()));
 
                     //get filtred item and print on display
                     restRqlStore.filter(filter.toString()).forEach(function (product) {
-                        element.innerHTML += "<li><ul>";
+                        html+= "<li><ul>";
                         for (var field in product) {
                             if (product.hasOwnProperty(field)) {
-                                element.innerHTML += "<li>" + field + ": " + product[field] + "</li>";
+                                html+= "<li>" + field + ": " + product[field] + "</li>";
                             }
                         }
-                        element.innerHTML += "</ul></li>";
+                        html += "</ul></li>";
+                    }).then(function () {
+                        html += "</ul>";
+                        element.innerHTML = html;
                     });
-                    element.innerHTML += "</ul>";
                 }
             });
         }
@@ -294,7 +310,8 @@
             for (var i = 0; i < 50; ++i) {
                 restRqlStore.put({
                     "name": "testName" + i,
-                    "surname": "testSurname" + i
+                    "surname": "testSurname" + i,
+                    "age": i
                 });
             }
         });

@@ -1,0 +1,68 @@
+{% extends '@layout/rqlExample.html.twig' %}
+
+{% block main %}
+{% endblock main %}
+
+{% block script %}
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            // This code registers the correct location of the "demo"
+            // package so we can load Dojo from the CDN whilst still
+            // being able to load local modules
+            packages: [
+                {
+                    name: "Rscript",
+                    location: '/resource/js/dojo-rql/lib'
+                },
+                {
+                    name: "dstore",
+                    location: '/resource/js/dojo-dstore'
+                }
+            ]
+        };
+    </script>
+    <script src="resource/js/dojo/dojo.js"></script>
+    <script>
+        require([
+            "rql/query",
+            "dojo/dom",
+            "dstore/Rest",
+            "dstore/extensions/RqlQuery",
+            'dojo/_base/declare',
+        ], function (Query, dom,
+                     Rest,
+                     RqlQuery,
+                     declare) {
+
+            var Query = Query.Query;
+
+            var filter = new Query().select("age").and(Query().lt("age",25).args[0],Query().gt("age",7).args[0]);
+
+            //Подмешиваем миксин в DS
+            var RestRqlStore = declare([Rest, RqlQuery]);
+
+            //Создаем DS
+            var restRqlStore = new RestRqlStore({
+                "target": "/api/v1/rest/users"
+            });
+
+            //Получаем элемент куда отрисуем найденые елементы.
+            var element = dom.byId("main");
+            element.innerHTML = "<ul>";
+            //Отправляем запрос
+            restRqlStore.filter(filter.toString()).forEach(function (product) {
+                //Найденые елементы печатаем на екране
+                element.innerHTML += "<li><ul>";
+                for (var field in product) {
+                    if (product.hasOwnProperty(field)) {
+                        element.innerHTML += "<li>" + field + ": " + product[field] + "</li>";
+                    }
+                }
+                element.innerHTML += "</ul></li>";
+            });
+            element.innerHTML += "</ul>";
+        })
+    </script>
+{% endblock script %}

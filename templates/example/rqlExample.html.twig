@@ -149,6 +149,7 @@
                     {"label": "id", "field": "id"},
                     {"label": "Имя", "field": "name"},
                     {"label": "Фамилия", "field": "surname"},
+                    {"label": "Возраст", "field": "age"},
                 ],
                 "collection": centralDataStore,
                 "selectionMode": "single",
@@ -190,6 +191,10 @@
             name: 'surname',
             placeHolder: "surname",
         }).placeAt(form.containerNode);
+        new TextBox({
+            name: 'age',
+            placeHolder: "age",
+        }).placeAt(form.containerNode);
 
         var myDialog = dijit.byId('myDialog');
         if (!myDialog) {
@@ -202,7 +207,8 @@
                     var f = query("#form1")[0];
                     centralDataStore.put({
                         "name": f['name'].value,
-                        "surname": f['surname'].value
+                        "surname": f['surname'].value,
+                        "age": f['age'].value
                     });
                 }
             });
@@ -292,7 +298,8 @@
             {
                 centralDataStore.put({
                     "name": "testName" + i,
-                    "surname": "testSurname" + i
+                    "surname": "testSurname" + i,
+                    "age":  i
                 });
             }
         });

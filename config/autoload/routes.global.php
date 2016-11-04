@@ -55,7 +55,7 @@ return [
 
         [
             'name' => 'example',
-            'path' => '/{example:[a-zA-Z]{1,40}}',
+            'path' => '/{example:[a-zA-Z0-9]{1,40}}',
             'middleware' => zaboy\RqlExample\Action\RqlExampleAction::class,
             'allowed_methods' => ['GET'],
         ]

@@ -1,0 +1,67 @@
+{% extends '@layout/rqlExample.html.twig' %}
+
+{% block main %}
+{% endblock main %}
+
+{% block script %}
+    <script>
+        var dojoConfig = {
+            async: true,
+            isDebug: true,
+            // This code registers the correct location of the "demo"
+            // package so we can load Dojo from the CDN whilst still
+            // being able to load local modules
+            packages: [
+                {
+                    name: "Rscript",
+                    location: '/resource/js/dojo-rql/lib'
+                },
+                {
+                    name: "dstore",
+                    location: '/resource/js/dojo-dstore/'
+                }
+            ]
+        };
+    </script>
+    <script src="resource/js/dojo/dojo.js"></script>
+    <script>
+        //Подключаем библиотеку Persvr rql https://github.com/persvr/rql
+        require([
+            "rql/query",
+            "dojo/domReady!"
+        ], function (Query) {
+
+            var Query = Query.Query;
+
+
+            // 1. Создаём новый объект XMLHttpRequest
+            var xhr = new XMLHttpRequest();
+
+            // 2. Задаем URL нашего хранилища
+            var url = 'http://localhost:8080/api/v1/rest/users';
+
+            // 3. Создаем наш query
+            var query = new Query().limit(10, 10);
+
+            // 4. Конвертируем Query в строку.
+            var rql = query.toString();
+
+            // 5. Конфигурируем его: GET-запрос на URL 'http://localhost:8080/api/v1/rest/users' + наш Rql '' запрос
+            // (Убираем асинхронность запроса для простоты примера)
+            xhr.open('GET', url + '?' + rql, false);
+
+            // 6. Отсылаем запрос
+            xhr.send();
+
+            // 7. Если код ответа сервера не 200, то это ошибка
+            if (xhr.status != 200) {
+                // обработать ошибку
+                alert(xhr.status + ': ' + xhr.statusText); // пример вывода: 404: Not Found
+            } else {
+                // вывести результат
+                alert(xhr.responseText); // responseText -- текст ответа.
+            }
+
+        })
+    </script>
+{% endblock script %}
