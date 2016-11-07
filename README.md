@@ -40,6 +40,7 @@
 # Установка npm зависимостей 
 
 1) Установите себе [npm](https://www.npmjs.com/)  
+
 2) Установите модуль компосера для загрузки npm зависимотей выполнив команду:  
        
        `composer global require fxp/composer-asset-plugin`
@@ -47,8 +48,22 @@
 3) Что бы установить все зависимости выполните команду:  
        
         `composer install`
-
+        
 4) Следуйте инструкциям  
+
+    > В случае возникновения ошибки   
+    " Warning: Permanently added 'github.com,192.30.253.113' (RSA) to the list of known hosts.  
+    Permission denied (publickey).  
+    fatal: Could not read from remote repository.  
+    Please make sure you have the correct access rights and the repository exists. "
+    
+    1) Создайте учетную записть на github (Если таковой нет)
+    
+    2) Сгенерируйте rsa key.
+     
+    3) Добавте публичный rsa ключ в учетную запись на github.
+    
+    4) Проделайте шаг 3 основного списка еще раз.
 
 # Doc 
 
