@@ -59,4 +59,5 @@
 * [Ebay FindItemsIneBayStore](https://github.com/avz-cmf/zaboy-dojo/blob/master/doc/Ebay%20FindItemsIneBayStore.md)  
 * [Ebay GetItemTransactions](https://github.com/avz-cmf/zaboy-dojo/blob/master/doc/Ebay%20GetItemTransactions.md)  
 * [Ebay Notification](https://github.com/avz-cmf/zaboy-dojo/blob/master/doc/Ebay%20Notification.md)  
-* [Persvr Rql Query](https://github.com/avz-cmf/zaboy-dojo/blob/master/doc/Persvr%20Rql%20Query.md)  
+* [Rql Example](https://github.com/avz-cmf/zaboy-dojo/blob/master/doc/Rql%20Example.md)  
+* [RQL](https://github.com/avz-cmf/zaboy-dojo/blob/master/doc/RQL.md)  
