@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/resource/js/dojo/resources/dojo.css" rel="stylesheet">
+    <link href="/resource/js/dijit/themes/claro/claro.css" rel="stylesheet">
+    <link rel="stylesheet" href="/resource/js/dojox/highlight/resources/highlight.css"/>
+    <link rel="stylesheet" href="/resource/js/dojox/highlight/resources/pygments/colorful.css"/>
+    <link rel="stylesheet" href="/resource/js/dgrid/css/dgrid.css"/>
+    <link rel="stylesheet" href="/resource/js/dgrid/css/skins/claro.css"/>
+    <link rel="stylesheet" href="/resource/js/dgrid/css/skins/claro.css"/>
+    <link rel="stylesheet" href="/resource/js/dojox/grid/enhanced/resources/claro/EnhancedGrid.css"/>
+    <link rel="stylesheet" href="/resource/js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css"/>
+    <link rel="stylesheet" href="/resource/js/dojo-rql/lib/FilterEditor/resources/css/FilterEditor.css"/>
+    <style>
+        #control-box {
+            margin: 10px;
+        }
+        #filterResult {
+            margin: 50px;
+        }
+        ul {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body class="claro">
+<script>
+    var dojoConfig = {
+        async: true,
+        isDebug: true,
+        // This code registers the correct location of the "demo"
+        // package so we can load Dojo from the CDN whilst still
+        // being able to load local modules
+        packages: [
+            {
+                name: "Rscript",
+                location: '/resource/js/dojo-rql/lib'
+            },
+            {
+                name: "dstore",
+                location: '/resource/js/dojo-dstore/'
+            }
+        ]
+    };
+</script>
+<script src="resource/js/dojo/dojo.js"></script>
+<div>
+    <h1>Таблица поддерживающая rql фильтрацию</h1>
+    <p>В данном примере у нас есть таблциа Users, которя хранит пользователей.
+        <br>Мы можем добавить пользователя в ручную - для этого нужно нажать кнопку `Создать элемент`.
+        <br>Так же можно сгенерировать 50 пользователей автоматически - нажать кнопку `Создать элемент`.
+        <br>Мы так же можем удалить либо выбраного пользователя по id,
+        либо удалить сразу всех - нажать кнопки `Удалить выбраный элемент`, `Удалить все` соответсвенно.
+        <br>Что бы задать фильтр мы дожны нажать одноименную кнопку `Созать фильтр`.
+        В поле rql query мы должны ввести либо rql Query object. (Более детально о Query object <a
+                href="https://github.com/persvr/rql">тут - persvr/rql</a>).
+        <br>Так же вы можете ввести туда rqlString.
+    </p>
+</div>
+<h2><a href="https://github.com/avz-cmf/zaboy-dojo/blob/master/doc/Persvr%20Rql%20Query.md">Подробнее о Rql Query</a></h2>
+<div id="grid"></div>
+<div id="control-box">
+    <div id="newElement">
+        <button id="crateElement">Создать элемент</button>
+        <button id="gen50Element">Сгенерировать 50 элементов</button>
+
+    </div>
+    <div id="deleteElement">
+        <button id="deleteElement">Удалить выбраный элемент</button>
+        <button id="deleteGen50Element">Удалить все</button>
+    </div>
+    <div id="util">
+        <button id="setFilter">Созать фильтр</button>
+        <button id="refresh">Перезагрузить таблицу(Очистить фильтры)</button>
+    </div>
+</div>
+<div id="filterResult"></div>
+
+<script>
+    require([
+        "dojo/dom",
+        'dojo/_base/array',
+        "dojo/query",
+        'dojo/json',
+        "rql/query",
+        "rql/parser",
+        "dijit",
+        'dstore/Store',
+        'dstore/Memory',
+        'dstore/Request',
+        'dstore/LocalDB',
+        'dstore/Cache',
+        'dstore/Tree',
+        "dijit/form/Button",
+        'dstore/RequestMemory',
+        'dstore/extensions/RqlQuery',
+        "dstore/Rest",
+        'dstore/Trackable',
+        "dijit/ConfirmDialog",
+        "dijit/form/TextBox",
+        "dijit/form/Form",
+        "dgrid/OnDemandGrid",
+        "dojo/on",
+        "dojo/_base/window",
+        'dojo/_base/declare',
+        'dojo/request',
+        'dojo/_base/lang',
+        "dojo/Deferred",
+        "dojo/dom-style",
+        "dojo/domReady!"
+    ], function (dom,
+                 array,
+                 query,
+                 json,
+                 Query,
+                 parseQuery,
+                 dijit,
+                 Store,
+                 Memory,
+                 Request,
+                 LocalDB,
+                 Cache,
+                 Tree,
+                 Button,
+                 RequestMemory,
+                 RqlQuery,
+                 Rest,
+                 Trackable,
+                 ConfirmDialog,
+                 TextBox,
+                 Form,
+                 OnDemandGrid,
+                 on,
+                 window,
+                 declare,
+                 request,
+                 lang,
+                 domStyle) {
+
+        var Query = Query.Query;
+
+        //Create DS with mixin
+        var RestRqlStore = declare([Rest, Trackable, RqlQuery]);
+        //var RestRqlStore = declare([Rest, Trackable]);
+
+        //Create ds instance
+        var restRqlStore = new RestRqlStore({
+            "target": "/api/v1/rest/users"
+        });
+
+
+        //create grid
+        var grid = new (declare([OnDemandGrid]))({
+            collection: restRqlStore,
+            columns: {
+                name: {
+                    label: 'First Name'
+                },
+                surname: {
+                    label: 'Last Name'
+                },
+                age: {
+                    label: 'Age'
+                }
+            }
+        }, 'grid');
+
+        grid.startup();
+
+        //create form and dialog for control
+        var form = new Form({
+            id: 'form1',
+        });
+
+        new TextBox({
+            name: 'name',
+            placeHolder: "name",
+        }).placeAt(form.containerNode);
+
+        new TextBox({
+            name: 'surname',
+            placeHolder: "surname",
+        }).placeAt(form.containerNode);
+
+        new TextBox({
+            name: 'age',
+            placeHolder: "10",
+        }).placeAt(form.containerNode);
+
+        var myDialog = dijit.byId('myDialog');
+        if (!myDialog) {
+            myDialog = new ConfirmDialog({
+                id: 'myDialog1',
+                title: 'test dialog',
+                content: form,
+                style: 'width:600px;',
+                execute: function () {
+                    var f = query("#form1")[0];
+                    restRqlStore.put({
+                        "name": f['name'].value,
+                        "surname": f['surname'].value,
+                        "age": f['age'].value
+                    });
+                }
+            });
+        }
+        form.startup();
+
+
+        var form2 = new Form({
+            id: 'form2',
+        });
+
+        new TextBox({
+            name: 'id',
+            placeHolder: "id",
+        }).placeAt(form2.containerNode);
+
+        var myDialog2 = dijit.byId('myDialog2');
+        if (!myDialog2) {
+            myDialog2 = new ConfirmDialog({
+                id: 'myDialog2',
+                title: 'test dialog',
+                content: form2,
+                style: 'width:600px;',
+                execute: function () {
+                    var f = query("#form2")[0];
+                    if (!f['id'].value) {
+                        alert("not set id");
+                        return;
+                    }
+                    restRqlStore.remove(f['id'].value);
+                }
+            });
+        }
+        form2.startup();
+
+
+        var form3 = new Form({
+            id: 'form3',
+        });
+
+        new TextBox({
+            name: 'filter',
+            placeHolder: "new Query().eq(\"name\",\"testName0\")",
+        }).placeAt(form3.containerNode);
+
+        var myDialog3 = dijit.byId('myDialog3');
+        if (!myDialog3) {
+            myDialog3 = new ConfirmDialog({
+                id: 'myDialog3',
+                title: 'test dialog',
+                content: form3,
+                style: 'width:600px;',
+                execute: function () {
+                    var f = query("#form3")[0];
+                    var filter = eval(f['filter'].value);
+                    var element = dom.byId("filterResult");
+                    element.innerHTML = "";
+                    var html = "<ul>";
+
+                    //set filtred Datastore to grid
+                    grid.set("collection", restRqlStore.filter(filter.toString()));
+
+                    //get filtred item and print on display
+                    restRqlStore.filter(filter.toString()).forEach(function (product) {
+                        html+= "<li><ul>";
+                        for (var field in product) {
+                            if (product.hasOwnProperty(field)) {
+                                html+= "<li>" + field + ": " + product[field] + "</li>";
+                            }
+                        }
+                        html += "</ul></li>";
+                    }).then(function () {
+                        html += "</ul>";
+                        element.innerHTML = html;
+                    });
+                }
+            });
+        }
+
+        form3.startup();
+
+        on(dom.byId("crateElement"), "click", function () {
+            myDialog.show();
+        });
+
+        on(dom.byId("deleteElement"), "click", function () {
+            myDialog2.show();
+        });
+
+        on(dom.byId("setFilter"), "click", function () {
+            myDialog3.show();
+        });
+
+        on(dom.byId("refresh"), "click", function () {
+
+
+            //clear grid store
+            grid.set("collection", restRqlStore);
+
+            //clear html element for resived item
+            var element = dom.byId("filterResult");
+            element.innerHTML = "";
+        });
+
+        on(dom.byId("gen50Element"), "click", function () {
+            for (var i = 0; i < 50; ++i) {
+                restRqlStore.put({
+                    "name": "testName" + i,
+                    "surname": "testSurname" + i,
+                    "age": i
+                });
+            }
+        });
+        on(dom.byId("deleteGen50Element"), "click", function () {
+            for (var i = 0; i < 50; ++i) {
+                restRqlStore.forEach(function (item) {
+                    restRqlStore.remove(item.id);
+                });
+            }
+        });
+
+        grid.startup();
+    })
+</script>
+</body>
+</html>
