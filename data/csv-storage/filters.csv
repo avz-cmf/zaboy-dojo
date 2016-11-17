@@ -1,0 +1,3 @@
+id;name;filter;tableName
+582;"new Filter";eq(name,testName0);dataStoreViewerFilterPanel
+582;"new Filter";eq(name,testName0);dataStoreViewerFilterPanel
