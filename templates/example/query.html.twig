@@ -42,38 +42,14 @@
     };
 </script>
 <script src="resource/js/dojo/dojo.js"></script>
-
-{#<button id="getUrl">Указать Url</button>#}
 <div id="DataStoreViewer"></div>
-{#<div id="util">
-    <button id="setFilter">Созать фильтр</button>
-    <button id="refresh">Перезагрузить таблицу(Очистить фильтры)</button>
-</div>#}
 <script>
+    /*<a>FOR READ DOC - GO TO "https://github.com/avz-cmf/dojo-rql/blob/master/DataStoreVIewer.md"</a>*/
     require([
         "dojo/dom",
-        'dojo/_base/array',
-        "dojo/query",
-        'dojo/json',
-        "Rscript/DataStoreViewer/DataStoreViewer",
-        "dojo/on",
-        "dojo/_base/window",
-        'dojo/_base/declare',
-        'dojo/_base/lang',
-        "dojo/dom-style",
-        "dojo/domReady!"
+        "Rscript/DataStoreViewer/widget/DataStoreViewer",
     ], function (dom,
-                 array,
-                 query,
-                 json,
-                 DataStoreViewer,
-                 on,
-                 window,
-                 declare,
-                 request,
-                 lang,
-                 Deferred,
-                 domStyle) {
+                 DataStoreViewer) {
         var dataStoreViewer = new DataStoreViewer();
         dataStoreViewer.placeAt(dom.byId('DataStoreViewer'));
         dataStoreViewer.startup();
