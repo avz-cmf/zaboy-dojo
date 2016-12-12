@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/resource/js/dojo/resources/dojo.css" rel="stylesheet">
+    <link href="/resource/js/dijit/themes/claro/claro.css" rel="stylesheet">
+    <link rel="stylesheet" href="/resource/js/dojox/highlight/resources/highlight.css"/>
+    <link rel="stylesheet" href="/resource/js/dojox/highlight/resources/pygments/colorful.css"/>
+    <link rel="stylesheet" href="/resource/js/dgrid/css/dgrid.css"/>
+    <link rel="stylesheet" href="/resource/js/dgrid/css/skins/claro.css"/>
+    <link rel="stylesheet" href="/resource/js/dgrid/css/skins/claro.css"/>
+    <link rel="stylesheet" href="/resource/js/dojox/grid/enhanced/resources/claro/EnhancedGrid.css"/>
+    <link rel="stylesheet" href="/resource/js/dojox/grid/enhanced/resources/EnhancedGrid_rtl.css"/>
+    <link rel="stylesheet" href="/resource/js/dojo-rql/lib/FilterEditor/resources/css/FilterEditor.css"/>
+
+    <link rel="stylesheet" href="/resource/js/dojo-rql/lib/DataStoreViewer/resource/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/resource/js/dojo-rql/lib/DataStoreViewer/resource/bootstrap/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="/resource/js/dojo-rql/lib/DataStoreViewer/resource/bootstrap/css/dashboard.css">
+
+    <script src="/resource/js/dojo-rql/lib/DataStoreViewer/resource/bootstrap/js/bootstrap.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+</head>
+<body class="claro">
+<script>
+    var dojoConfig = {
+        async: true,
+        isDebug: true,
+        // This code registers the correct location of the "demo"
+        // package so we can load Dojo from the CDN whilst still
+        // being able to load local modules
+        packages: [
+            {
+                name: "Rscript",
+                location: '/resource/js/dojo-rql/lib'
+            },
+            {
+                name: "dstore",
+                location: '/resource/js/dojo-dstore/'
+            }
+        ]
+    };
+</script>
+<script src="resource/js/dojo/dojo.js"></script>
+<div id="DataStoreViewer2"></div>
+<div id="DataStoreViewer"></div>
+<div id="grid"></div>
+<script>
+    /*<a>FOR READ DOC - GO TO "https://github.com/avz-cmf/dojo-rql/blob/master/DataStoreVIewer.md"</a>*/
+    require([
+        'dojo/_base/declare',
+        "dojo/dom",
+        'dgrid/Grid',
+        'dgrid/Keyboard',
+        'dgrid/Selection',
+        'dgrid/extensions/ColumnHider',
+        'dgrid/extensions/ColumnResizer',
+        'dgrid/extensions/Pagination',
+        'Rscript/FilteredGrid/widget/FilteredGrid',
+        'Rscript/extensions/Store/StoreRqlFilter',
+        "dstore/Rest",
+        'dstore/Trackable',
+        "Rscript/DataStoreViewer/widget/DataStoreViewer",
+        "Rscript/DataPreviewControlPanel/widget/DataPreviewControlPanel",
+        "Rscript/FilterControlPanel/widget/FilterControlPanel",
+    ], function (declare,
+                 dom,
+                 Grid,
+                 Keyboard,
+                 Selection,
+                 ColumnHider,
+                 ColumnResizer,
+                 Pagination,
+                 FilteredGrid,
+                 StoreRqlFilter,
+                 Rest,
+                 Trackable,
+                 DataStoreViewer,
+                 DataPreviewControlPanel,
+                 FilterControlPanel) {
+        var dstore1 = new (declare([Rest, Trackable]))({
+            target: "http://localhost:8080/api/v1/rest/users"
+        });
+        var dstore2 = new (declare([StoreRqlFilter, Trackable]))({
+            target: "http://localhost:8080/api/v1/rest/users",
+            'headers': {
+                'Accept': 'application/json',
+            },
+        });
+        var grid1 = new (declare([Grid, Keyboard, Selection, Pagination, ColumnHider, ColumnResizer]))({
+            collection: dstore1,
+            columns: [
+                {"label": "id", "field": "id"},
+                {"label": "Имя", "field": "name"},
+                {"label": "Фамилия", "field": "surname"},
+                {"label": "Возраст", "field": "age"},
+            ],
+            "selectionMode": "single",
+            "pagingLinks": false,
+            "pagingTextBox": true,
+            "firstLastArrows": true,
+            "rowsPerPage": 15,
+            "pageSizeOptions": [10, 15, 25]
+        }, 'grid');
+
+
+        var filteredGridOption = {
+            "title": "Таблциа пользователей",
+            "name": "plotPublishPrice",
+            "options": {
+                "columns": [
+                    {"label": "id", "field": "id"},
+                    {"label": "Имя", "field": "name"},
+                    {"label": "Фамилия", "field": "surname"},
+                    {"label": "Возраст", "field": "age"},
+                ],
+                "collection": dstore2,
+                "selectionMode": "single",
+                "pagingLinks": false,
+                "pagingTextBox": true,
+                "firstLastArrows": true,
+                "rowsPerPage": 15,
+                "pageSizeOptions": [10, 15, 25]
+            },
+
+            "declare": [
+                "Grid",
+                "Keyboard",
+                "Selection",
+                "ColumnHider",
+                "ColumnResizer",
+                "GridRqlFilter"
+                //"_StoreMixin"
+            ]
+        };
+
+        var filterGrid = new FilteredGrid(filteredGridOption);
+
+        grid1.startup();
+
+        var tableFilterControlPanel = new FilterControlPanel({
+            "title": "Панель управления фильтрами ",
+            "id": "tableFilter",
+            "name": "plotPublishPrice",
+
+            "filteredStoreDataOption": [
+                {
+                    "label": "Имя",
+                    "value": {
+                        "type": "string",
+                        "name": "name",
+                        "field": {
+                            'type': "TextBox"
+                        }
+                    },
+                    "filter": [
+                        {"id": 0, "label": "=", "value": "eq"},
+                        {"id": 0, "label": "!=", "value": "ne"}
+                    ]
+                },
+                {
+                    "label": "Фамилия",
+                    "value": {
+                        "type": "string",
+                        "name": "surname",
+                        "field": {
+                            'type': "TextBox"
+                        }
+                    },
+                    "filter": [
+                        {"id": 0, "label": "=", "value": "eq"},
+                        {"id": 0, "label": "!=", "value": "ne"}
+                    ]
+                }
+            ],
+            "store": new (declare([Rest, Trackable]))({
+                'headers': {
+                    'Accept': 'application/json'
+                },
+                "target": "/rest/filters_list"
+            })
+        });
+        var tableDataPreviewControlPanel = new DataPreviewControlPanel({
+            title: "Таблица профилей пользователей",
+            filterControlPanel:tableFilterControlPanel,
+            dataViewer: filterGrid
+        });
+        tableDataPreviewControlPanel.placeAt(dom.byId('DataStoreViewer'));
+        tableDataPreviewControlPanel.startup();
+
+        var dataStoreViewer = new DataStoreViewer();
+        dataStoreViewer.placeAt(dom.byId('DataStoreViewer2')).startup();
+    })
+</script>
+</body>
+</html>
