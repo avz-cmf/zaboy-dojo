@@ -9,7 +9,7 @@ return [
         'factories' => [
             zaboy\App\Action\HomePageAction::class => zaboy\App\Action\HomePageFactory::class,
             zaboy\RqlExample\Action\RqlExampleAction::class => zaboy\RqlExample\Action\RqlExampleFactory::class,
-            zaboy\rest\Pipe\RestRql::class => zaboy\rest\Pipe\Factory\RestRqlFactory::class,
+            zaboy\rest\Pipe\RestRql::class => zaboy\RqlExample\DataStore\Pipes\Factory\RestPipeFactory::class,
             zaboy\Ebay\Trading\Action\GetItemTransactionsAction::class => zaboy\Ebay\Trading\Action\GetItemTransactionsFactory::class,
             zaboy\Ebay\Notification\Action\NotificationAction::class => \zaboy\Ebay\Notification\Action\NotificationFactory::class,
         ],

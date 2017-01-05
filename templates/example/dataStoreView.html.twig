@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body class="claro">
+<script>
+    var dojoConfig = {
+        async: true,
+        isDebug: true,
+        // This code registers the correct location of the "demo"
+        // package so we can load Dojo from the CDN whilst still
+        // being able to load local modules
+        packages: [
+            {
+                name: "Rscript",
+                location: '/resource/js/dojo-rql/lib'
+            },
+            {
+                name: "dstore",
+                location: '/resource/js/dojo-dstore/'
+            }
+        ]
+    };
+</script>
+<script src="resource/js/dojo/dojo.js"></script>
+<div id="DataStoreViewer"></div>
+<script>
+    /*<a>FOR READ DOC - GO TO "https://github.com/avz-cmf/dojo-rql/blob/master/DataStoreVIewer.md"</a>*/
+    require([
+        "dojo/dom",
+        "Rscript/DataStoreViewer/widget/DataStoreView",
+    ], function (dom,
+                 DataStoreViewer) {
+        var dataStoreViewer = new DataStoreViewer({url: 'http://localhost:8080/api/v1/rest/users'});
+        dataStoreViewer.placeAt(dom.byId('DataStoreViewer')).startup();
+    })
+</script>
+</body>
+</html>

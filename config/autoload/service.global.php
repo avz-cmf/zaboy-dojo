@@ -9,7 +9,6 @@
 return [
 
     'dataStore' => [
-
         'users' => [
             'class' => 'zaboy\rest\DataStore\CsvBase',
             'filename' => __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "..".DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "csv-storage" . DIRECTORY_SEPARATOR . 'users.csv',
