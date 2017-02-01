@@ -36,7 +36,8 @@
         "xiag/rql-parser": "^1.0",
         "zendframework/zend-http": "^2.5",
         "zendframework/zend-db": "^2.7",
-        "avz-cmf/zaboy-rest": "^4.1",
+        "mindplay/jsonfreeze": "0.3.3.x-dev",
+	"rollun-com/rollun-datastore": "^2.0",
         "dts/ebay-sdk-php": "^4.0",
         "npm-asset/dojo-rql": "^0.2.0",
         "npm-asset/rql": "^0.3.3"
@@ -57,6 +58,7 @@
             "zaboy-test\\": "test/"
         }
     },
+
     "scripts": {
         "check": [
             "@cs",
@@ -65,6 +67,10 @@
         "cs": "phpcs",
         "cs-fix": "phpcbf",
         "serve": "php -S 0.0.0.0:8080 -t public/ public/index.php",
-        "test": "phpunit"
+        "test": "phpunit",
+	"lib-install": "rollun\\installer\\Command::install",
+	"lib-uninstall": "rollun\\installer\\Command::uninstall",
+	"lib-reinstall": "rollun\\installer\\Command::reinstall"
+
     }
 }

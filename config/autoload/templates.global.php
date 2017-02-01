@@ -3,11 +3,9 @@
 return [
     'dependencies' => [
         'factories' => [
-            'Zend\Expressive\FinalHandler' =>
-                Zend\Expressive\Container\TemplatedErrorHandlerFactory::class,
-
             Zend\Expressive\Template\TemplateRendererInterface::class =>
                 Zend\Expressive\Twig\TwigRendererFactory::class,
+            'Twig_Environment' => Zend\Expressive\Twig\TwigEnvironmentFactory::class,
         ],
     ],
 
@@ -20,6 +18,7 @@ return [
             'example' =>['templates/example']
         ],
     ],
+
 
     'twig' => [
         'cache_dir'      => 'data/cache/twig',

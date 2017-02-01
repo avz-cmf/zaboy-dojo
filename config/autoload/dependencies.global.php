@@ -1,5 +1,5 @@
 <?php
-use zaboy\rest\DataStore\Aspect\Factory\AspectAbstractFactory;
+/*use zaboy\rest\DataStore\Aspect\Factory\AspectAbstractFactory;
 use zaboy\rest\DataStore\Eav\EavAbstractFactory;
 use zaboy\rest\DataStore\Factory\CacheableAbstractFactory;
 use zaboy\rest\DataStore\Factory\CsvAbstractFactory;
@@ -8,6 +8,7 @@ use zaboy\rest\DataStore\Factory\HttpClientAbstractFactory;
 use zaboy\rest\DataStore\Factory\MemoryAbstractFactory;
 use zaboy\rest\TableGateway\Factory\TableGatewayAbstractFactory;
 use zaboy\rest\Middleware\Factory\DataStoreAbstractFactory as MiddlewareDataStoreAbstractFactory;
+*/
 use Zend\Db\Adapter\AdapterAbstractServiceFactory;
 use Zend\Expressive\Application;
 use Zend\Expressive\Container\ApplicationFactory;
@@ -32,7 +33,7 @@ return [
 
         ],
         'abstract_factories' => [
-            EavAbstractFactory::class,
+            /*EavAbstractFactory::class,
             AspectAbstractFactory::class,
             MiddlewareDataStoreAbstractFactory::class,
             HttpClientAbstractFactory::class,
@@ -41,8 +42,7 @@ return [
             MemoryAbstractFactory::class,
             CacheableAbstractFactory::class,
             AdapterAbstractServiceFactory::class,
-            TableGatewayAbstractFactory::class,
-
+            TableGatewayAbstractFactory::class,*/
         ]
     ],
 ];

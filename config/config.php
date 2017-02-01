@@ -1,4 +1,10 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: victorsecuring
+ * Date: 27.12.16
+ * Time: 4:04 PM
+ */
 
 use Zend\Stdlib\ArrayUtils;
 use Zend\Stdlib\Glob;

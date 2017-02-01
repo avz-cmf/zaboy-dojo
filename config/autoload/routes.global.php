@@ -9,9 +9,6 @@ return [
         'factories' => [
             zaboy\App\Action\HomePageAction::class => zaboy\App\Action\HomePageFactory::class,
             zaboy\RqlExample\Action\RqlExampleAction::class => zaboy\RqlExample\Action\RqlExampleFactory::class,
-            zaboy\rest\Pipe\RestRql::class => zaboy\rest\Pipe\Factory\RestRqlFactory::class,
-            zaboy\Ebay\Trading\Action\GetItemTransactionsAction::class => zaboy\Ebay\Trading\Action\GetItemTransactionsFactory::class,
-            zaboy\Ebay\Notification\Action\NotificationAction::class => \zaboy\Ebay\Notification\Action\NotificationFactory::class,
         ],
     ],
 
@@ -22,37 +19,19 @@ return [
             'middleware' => zaboy\App\Action\HomePageAction::class,
             'allowed_methods' => ['GET'],
         ],
-        [
+	[
+            'name' => 'api.rest',
+            'path' => '/api/v1/rest[/{resourceName}[/{id}]]',
+            'middleware' => 'api-rest',
+            'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+        ],
+
+       [
             'name' => 'api.v1.ping',
             'path' => '/api/v1/ping',
             'middleware' => zaboy\App\Action\PingAction::class,
             'allowed_methods' => ['GET'],
         ],
-        [
-            'name' => 'api.v1.rest',
-            'path' => '/api/v1/rest[/{Resource-Name}[/{id}]]',
-            'middleware' =>  zaboy\rest\Pipe\RestRql::class,
-            'allowed_method' => ['GET', 'POST', 'DELETE', 'PUSH'],
-        ],
-        [
-            'name' => 'api.v1.ebay.',
-            'path' => '/api/v1/ebay/findItem',
-            'middleware' => zaboy\Ebay\Finding\Action\FindItemsIneBayStoreAction::class,
-            'allowed_methods' => ['GET'],
-        ],
-        [
-            'name' => 'api.v1.ebay',
-            'path' => '/api/v1/ebay/itemTransactions',
-            'middleware' => zaboy\Ebay\Trading\Action\GetItemTransactionsAction::class,
-            'allowed_methods' => ['GET'],
-        ],
-        [
-            'name' => 'api.v1.ebay',
-            'path' => '/api/v1/ebay/notification',
-            'middleware' => zaboy\Ebay\Notification\Action\NotificationAction::class,
-            'allowed_methods' => ['GET'],
-        ],
-
         [
             'name' => 'example',
             'path' => '/{example:[a-zA-Z0-9]{1,40}}',
