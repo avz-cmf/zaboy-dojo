@@ -9,6 +9,14 @@ use zaboy\rest\DataStore\Factory\MemoryAbstractFactory;
 use zaboy\rest\TableGateway\Factory\TableGatewayAbstractFactory;
 use zaboy\rest\Middleware\Factory\DataStoreAbstractFactory as MiddlewareDataStoreAbstractFactory;
 */
+use rollun\datastore\DataStore\Aspect\Factory\AspectAbstractFactory;
+use rollun\datastore\DataStore\Eav\EavAbstractFactory;
+use rollun\datastore\DataStore\Factory\CacheableAbstractFactory;
+use rollun\datastore\DataStore\Factory\CsvAbstractFactory;
+use rollun\datastore\DataStore\Factory\DbTableAbstractFactory;
+use rollun\datastore\DataStore\Factory\HttpClientAbstractFactory;
+use rollun\datastore\DataStore\Factory\MemoryAbstractFactory;
+use rollun\datastore\TableGateway\Factory\TableGatewayAbstractFactory;
 use Zend\Db\Adapter\AdapterAbstractServiceFactory;
 use Zend\Expressive\Application;
 use Zend\Expressive\Container\ApplicationFactory;
@@ -33,16 +41,15 @@ return [
 
         ],
         'abstract_factories' => [
-            /*EavAbstractFactory::class,
+            EavAbstractFactory::class,
             AspectAbstractFactory::class,
-            MiddlewareDataStoreAbstractFactory::class,
             HttpClientAbstractFactory::class,
             DbTableAbstractFactory::class,
             CsvAbstractFactory::class,
             MemoryAbstractFactory::class,
             CacheableAbstractFactory::class,
             AdapterAbstractServiceFactory::class,
-            TableGatewayAbstractFactory::class,*/
+            TableGatewayAbstractFactory::class,
         ]
     ],
 ];

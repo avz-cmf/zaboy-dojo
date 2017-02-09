@@ -20,7 +20,7 @@ return [
             'allowed_methods' => ['GET'],
         ],
 	[
-            'name' => 'api.rest',
+            'name' => 'api-rest',
             'path' => '/api/v1/rest[/{resourceName}[/{id}]]',
             'middleware' => 'api-rest',
             'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
