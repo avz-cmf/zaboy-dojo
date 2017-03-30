@@ -14,19 +14,12 @@ use \rollun\installer\Command;
 use \rollun\logger\Installer as LoggerInstaller;
 
 return [
-    'logWriter' => [
-        FileLogWriter::class => [
-            FileLogWriterFactory::FILE_NAME_KEY =>
-                realpath(Command::getDataDir() . DIRECTORY_SEPARATOR .
-                    LoggerInstaller::LOGS_DIR . DIRECTORY_SEPARATOR . LoggerInstaller::LOGS_FILE)
-        ]
-    ],
-    'services' => [
+    'dependencies' => [
         'factories' => [
-            FileLogWriter::class => FileLogWriterFactory::class,
-            Logger::class => LoggerFactory::class,
+            \rollun\logger\LogWriter\FileLogWriter::class => \rollun\logger\LogWriter\FileLogWriterFactory::class,
+            \rollun\logger\Logger::class => \rollun\logger\LoggerFactory::class,
         ],
-        'aliases' =>[
+        'aliases' => [
             'logWriter' => FileLogWriter::class,
             'logger' => Logger::class,
         ]
